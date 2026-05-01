@@ -1,0 +1,23 @@
+{
+  "version": 1,
+  "skills": {
+    "scaffold": {
+      "source": "shipshitdev/library",
+      "sourceType": "github",
+      "skillPath": "skills/scaffold/SKILL.md",
+      "computedHash": "6d1bcbb224df7edd49e1aa1a99a243475423c0ab3c4d6120b001b40766c80685"
+    },
+    "security-compliance-audit": {
+      "source": "aj-geddes/useful-ai-prompts",
+      "sourceType": "github",
+      "skillPath": "skills/security-compliance-audit/SKILL.md",
+      "computedHash": "7bd7eb6443b48c6eee78b8a1a59e6b1a4128aee8b427b80b11e4ce76ecce8941"
+    },
+    "typescript-mcp-server-generator": {
+      "source": "github/awesome-copilot",
+      "sourceType": "github",
+      "skillPath": "skills/typescript-mcp-server-generator/SKILL.md",
+      "computedHash": "d7add3c0bf0b16006283fcb77748eb7025d574c5e2d15306d767fb901d47ad37"
+    }
+  }
+}
