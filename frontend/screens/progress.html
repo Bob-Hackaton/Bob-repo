@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bob MCP Forge - Generating</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="../styles/design-system.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    @keyframes pulse {
+      0%, 100% { opacity: 1; }
+      50% { opacity: 0.5; }
+    }
+    
+    .step-indicator {
+      position: relative;
+      padding-left: 48px;
+      margin-bottom: var(--space-4);
+    }
+    
+    .step-icon {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 32px;
+      height: 32px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-weight: 600;
+      font-size: var(--font-size-sm);
+    }
+    
+    .step-icon.pending {
+      background: var(--color-bg-secondary);
+      color: var(--color-text-tertiary);
+      border: 2px solid var(--color-border);
+    }
+    
+    .step-icon.active {
+      background: var(--color-primary);
+      color: white;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    .step-icon.complete {
+      background: var(--color-success);
+      color: white;
+    }
+    
+    .step-content {
+      padding-top: 4px;
+    }
+    
+    .step-title {
+      font-weight: 600;
+      font-size: var(--font-size-base);
+      margin-bottom: 4px;
+    }
+    
+    .step-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    .step-indicator:not(:last-child)::before {
+      content: '';
+      position: absolute;
+      left: 15px;
+      top: 40px;
+      width: 2px;
+      height: calc(100% - 8px);
+      background: var(--color-border);
+    }
+    
+    .step-indicator.complete::before {
+      background: var(--color-success);
+    }
+    
+    .progress-animation {
+      width: 100%;
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: var(--space-4);
+    }
+    
+    .code-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+    }
+    
+    .code-line {
+      height: 4px;
+      background: var(--color-border);
+      border-radius: 2px;
+      animation: fillLine 1.5s ease-in-out infinite;
+    }
+    
+    .code-line:nth-child(1) { width: 80%; animation-delay: 0s; }
+    .code-line:nth-child(2) { width: 60%; animation-delay: 0.2s; }
+    .code-line:nth-child(3) { width: 90%; animation-delay: 0.4s; }
+    .code-line:nth-child(4) { width: 70%; animation-delay: 0.6s; }
+    .code-line:nth-child(5) { width: 85%; animation-delay: 0.8s; }
+    
+    @keyframes fillLine {
+      0%, 100% { background: var(--color-border); }
+      50% { background: var(--color-primary); }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <a href="../index.html" class="app-logo">
+        <div class="app-logo-icon">B</div>
+        <span>Bob MCP Forge</span>
+      </a>
+      <nav class="app-nav">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="../documentation.html" class="nav-link">Documentation</a>
+        <span class="badge badge-info">
+          <span class="status-dot info"></span>
+          Generating
+        </span>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+      <div class="screen screen-centered">
+        <div style="max-width: 700px; width: 100%;">
+          
+          <!-- Progress Card -->
+          <div class="card" style="padding: var(--space-6);">
+            
+            <!-- Animation -->
+            <div class="progress-animation">
+              <div class="code-lines" style="width: 200px;">
+                <div class="code-line"></div>
+                <div class="code-line"></div>
+                <div class="code-line"></div>
+                <div class="code-line"></div>
+                <div class="code-line"></div>
+              </div>
+            </div>
+
+            <!-- Title -->
+            <div style="text-align: center; margin-bottom: var(--space-6);">
+              <h1 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">
+                Generating Your MCP Server
+              </h1>
+              <p style="font-size: var(--font-size-base); color: var(--color-text-secondary);">
+                This usually takes 15-30 seconds
+              </p>
+            </div>
+
+            <!-- Progress Steps -->
+            <div style="margin-bottom: var(--space-4);">
+              
+              <div class="step-indicator complete" id="step-1">
+                <div class="step-icon complete">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M3 8L6 11L13 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <div class="step-content">
+                  <div class="step-title">Understanding request</div>
+                  <div class="step-description">Analyzing your prompt and requirements</div>
+                </div>
+              </div>
+
+              <div class="step-indicator active" id="step-2">
+                <div class="step-icon active">
+                  <div class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></div>
+                </div>
+                <div class="step-content">
+                  <div class="step-title">Generating MCP server</div>
+                  <div class="step-description">Creating server code, schema, and configuration files</div>
+                </div>
+              </div>
+
+              <div class="step-indicator pending" id="step-3">
+                <div class="step-icon pending">3</div>
+                <div class="step-content">
+                  <div class="step-title">Running compliance scan</div>
+                  <div class="step-description">Checking security, performance, and policy compliance</div>
+                </div>
+              </div>
+
+              <div class="step-indicator pending" id="step-4">
+                <div class="step-icon pending">4</div>
+                <div class="step-content">
+                  <div class="step-title">Preparing report</div>
+                  <div class="step-description">Finalizing code preview and compliance results</div>
+                </div>
+              </div>
+
+            </div>
+
+            <!-- Progress Bar -->
+            <div class="progress-bar">
+              <div class="progress-bar-fill" id="progress-fill" style="width: 25%;"></div>
+            </div>
+
+          </div>
+
+          <!-- Info Card -->
+          <div style="margin-top: var(--space-3); padding: var(--space-3); background: var(--color-info-light); border-radius: var(--radius-lg); border: 1px solid var(--color-info);">
+            <div style="display: flex; gap: var(--space-2);">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg" style="flex-shrink: 0; margin-top: 2px;">
+                <path d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z" stroke="var(--color-info)" stroke-width="1.5"/>
+                <path d="M10 14V10M10 6H10.01" stroke="var(--color-info)" stroke-width="1.5" stroke-linecap="round"/>
+              </svg>
+              <div>
+                <div style="font-weight: 600; font-size: var(--font-size-sm); color: var(--color-info); margin-bottom: 4px;">
+                  What's happening?
+                </div>
+                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                  We're using AI to generate production-ready MCP server code based on your description. The code includes proper error handling, TypeScript types, and follows MCP protocol specifications.
+                </div>
+              </div>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Simulate progress
+    let currentStep = 1;
+    let progress = 25;
+    
+    function updateProgress() {
+      if (currentStep < 4) {
+        // Complete current step
+        const currentStepEl = document.getElementById(`step-${currentStep}`);
+        currentStepEl.classList.remove('active');
+        currentStepEl.classList.add('complete');
+        currentStepEl.querySelector('.step-icon').classList.remove('active');
+        currentStepEl.querySelector('.step-icon').classList.add('complete');
+        currentStepEl.querySelector('.step-icon').innerHTML = `
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M3 8L6 11L13 4" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        `;
+        
+        // Activate next step
+        currentStep++;
+        progress += 25;
+        
+        if (currentStep <= 4) {
+          const nextStepEl = document.getElementById(`step-${currentStep}`);
+          nextStepEl.classList.remove('pending');
+          nextStepEl.classList.add('active');
+          nextStepEl.querySelector('.step-icon').classList.remove('pending');
+          nextStepEl.querySelector('.step-icon').classList.add('active');
+          nextStepEl.querySelector('.step-icon').innerHTML = `
+            <div class="spinner" style="width: 16px; height: 16px; border-width: 2px;"></div>
+          `;
+        }
+        
+        document.getElementById('progress-fill').style.width = progress + '%';
+        
+        if (currentStep <= 4) {
+          setTimeout(updateProgress, 2500);
+        } else {
+          // Navigate to code preview
+          setTimeout(() => {
+            window.location.href = 'code-preview.html';
+          }, 1000);
+        }
+      }
+    }
+    
+    // Start progress after 2 seconds
+    setTimeout(updateProgress, 2500);
+  </script>
+</body>
+</html>

@@ -1,0 +1,480 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bob MCP Forge - Compliance Dashboard</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="../styles/design-system.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .summary-card {
+      text-align: center;
+      padding: var(--space-4);
+    }
+    
+    .summary-value {
+      font-size: var(--font-size-4xl);
+      font-weight: 700;
+      margin-bottom: var(--space-1);
+    }
+    
+    .summary-label {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      font-weight: 600;
+    }
+    
+    .issue-card {
+      padding: var(--space-3);
+      border-left: 4px solid;
+      transition: all var(--transition-base);
+    }
+    
+    .issue-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    .issue-card.critical {
+      border-left-color: var(--color-error);
+      background: var(--color-error-light);
+    }
+    
+    .issue-card.warning {
+      border-left-color: var(--color-warning);
+      background: var(--color-warning-light);
+    }
+    
+    .issue-card.info {
+      border-left-color: var(--color-info);
+      background: var(--color-info-light);
+    }
+    
+    .issue-header {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      margin-bottom: var(--space-2);
+    }
+    
+    .issue-content {
+      flex: 1;
+    }
+    
+    .issue-title {
+      font-weight: 600;
+      font-size: var(--font-size-base);
+      margin-bottom: 4px;
+    }
+    
+    .issue-location {
+      font-family: var(--font-mono);
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+      margin-bottom: var(--space-2);
+    }
+    
+    .issue-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: var(--line-height-relaxed);
+      margin-bottom: var(--space-2);
+    }
+    
+    .issue-fix {
+      background: white;
+      padding: var(--space-2);
+      border-radius: var(--radius-md);
+      font-size: var(--font-size-sm);
+      margin-bottom: var(--space-2);
+    }
+    
+    .issue-fix-title {
+      font-weight: 600;
+      margin-bottom: 4px;
+      display: flex;
+      align-items: center;
+      gap: var(--space-1);
+    }
+    
+    .filter-bar {
+      display: flex;
+      gap: var(--space-2);
+      flex-wrap: wrap;
+      margin-bottom: var(--space-4);
+    }
+    
+    .filter-btn {
+      padding: var(--space-1) var(--space-2);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      border: 1px solid var(--color-border);
+      background: white;
+      border-radius: var(--radius-md);
+      cursor: pointer;
+      transition: all var(--transition-fast);
+    }
+    
+    .filter-btn:hover {
+      border-color: var(--color-border-strong);
+    }
+    
+    .filter-btn.active {
+      background: var(--color-primary);
+      color: white;
+      border-color: var(--color-primary);
+    }
+    
+    .score-circle {
+      width: 120px;
+      height: 120px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: var(--font-size-3xl);
+      font-weight: 700;
+      margin: 0 auto var(--space-2);
+      position: relative;
+    }
+    
+    .score-circle.good {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+    
+    .score-circle.warning {
+      background: var(--color-warning-light);
+      color: #8e6a00;
+    }
+    
+    .score-circle.poor {
+      background: var(--color-error-light);
+      color: var(--color-error);
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <a href="../index.html" class="app-logo">
+        <div class="app-logo-icon">B</div>
+        <span>Bob MCP Forge</span>
+      </a>
+      <nav class="app-nav">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="../documentation.html" class="nav-link">Documentation</a>
+        <button class="btn btn-secondary" onclick="window.location.href='code-preview.html'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to Code
+        </button>
+        <button class="btn btn-primary" onclick="window.location.href='deployment.html'">
+          Deploy to Cloud
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </button>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+      <div class="screen screen-full">
+        <div class="container" style="max-width: var(--max-width-xl);">
+          
+          <!-- Page Header -->
+          <div style="margin-bottom: var(--space-6);">
+            <h1 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">
+              Compliance Dashboard
+            </h1>
+            <p style="font-size: var(--font-size-base); color: var(--color-text-secondary);">
+              Security, performance, and policy compliance analysis for your MCP server
+            </p>
+          </div>
+
+          <!-- Summary Cards -->
+          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); margin-bottom: var(--space-6);">
+            
+            <div class="card summary-card">
+              <div class="score-circle warning">
+                72
+              </div>
+              <div class="summary-label">Overall Score</div>
+            </div>
+
+            <div class="card summary-card" style="border-top: 4px solid var(--color-success);">
+              <div class="summary-value" style="color: var(--color-success);">18</div>
+              <div class="summary-label">Passed</div>
+            </div>
+
+            <div class="card summary-card" style="border-top: 4px solid var(--color-warning);">
+              <div class="summary-value" style="color: #8e6a00;">5</div>
+              <div class="summary-label">Warnings</div>
+            </div>
+
+            <div class="card summary-card" style="border-top: 4px solid var(--color-error);">
+              <div class="summary-value" style="color: var(--color-error);">2</div>
+              <div class="summary-label">Failed</div>
+            </div>
+
+          </div>
+
+          <!-- Filter Bar -->
+          <div class="filter-bar">
+            <button class="filter-btn active" data-filter="all">All Issues</button>
+            <button class="filter-btn" data-filter="critical">Critical</button>
+            <button class="filter-btn" data-filter="warning">Warnings</button>
+            <button class="filter-btn" data-filter="info">Info</button>
+            <div style="margin-left: auto; display: flex; gap: var(--space-2);">
+              <button class="filter-btn" data-category="security">Security</button>
+              <button class="filter-btn" data-category="performance">Performance</button>
+              <button class="filter-btn" data-category="compliance">Compliance</button>
+            </div>
+          </div>
+
+          <!-- Issues List -->
+          <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+            
+            <!-- Critical Issue -->
+            <div class="card issue-card critical">
+              <div class="issue-header">
+                <span class="badge badge-error">CRITICAL</span>
+                <div class="issue-content">
+                  <div class="issue-title">Missing Input Validation</div>
+                  <div class="issue-location">server.ts:45-52</div>
+                  <div class="issue-description">
+                    User input is not validated before processing. This could lead to injection attacks or unexpected behavior. All external inputs should be validated against a schema before use.
+                  </div>
+                  <div class="issue-fix">
+                    <div class="issue-fix-title">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Suggested Fix
+                    </div>
+                    <div style="color: var(--color-text-secondary);">
+                      Add Zod schema validation for all tool inputs. Example: <code class="code-inline">z.object({ location: z.string().min(1) })</code>
+                    </div>
+                  </div>
+                  <button class="btn btn-primary btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Apply Fix
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Critical Issue 2 -->
+            <div class="card issue-card critical">
+              <div class="issue-header">
+                <span class="badge badge-error">CRITICAL</span>
+                <div class="issue-content">
+                  <div class="issue-title">API Key Exposed in Code</div>
+                  <div class="issue-location">server.ts:12</div>
+                  <div class="issue-description">
+                    API key is hardcoded in the source code. This is a security risk as the key could be exposed in version control or logs. Use environment variables for sensitive credentials.
+                  </div>
+                  <div class="issue-fix">
+                    <div class="issue-fix-title">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Suggested Fix
+                    </div>
+                    <div style="color: var(--color-text-secondary);">
+                      Replace hardcoded key with <code class="code-inline">process.env.API_KEY</code> and add to .env file
+                    </div>
+                  </div>
+                  <button class="btn btn-primary btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Apply Fix
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Warning Issue -->
+            <div class="card issue-card warning">
+              <div class="issue-header">
+                <span class="badge badge-warning">WARNING</span>
+                <div class="issue-content">
+                  <div class="issue-title">Missing Error Handling</div>
+                  <div class="issue-location">server.ts:78-85</div>
+                  <div class="issue-description">
+                    API calls are not wrapped in try-catch blocks. Network failures or API errors could crash the server. Add proper error handling with user-friendly error messages.
+                  </div>
+                  <div class="issue-fix">
+                    <div class="issue-fix-title">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Suggested Fix
+                    </div>
+                    <div style="color: var(--color-text-secondary);">
+                      Wrap API calls in try-catch and return structured error responses
+                    </div>
+                  </div>
+                  <button class="btn btn-primary btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Apply Fix
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Warning Issue 2 -->
+            <div class="card issue-card warning">
+              <div class="issue-header">
+                <span class="badge badge-warning">WARNING</span>
+                <div class="issue-content">
+                  <div class="issue-title">No Rate Limiting</div>
+                  <div class="issue-location">server.ts:general</div>
+                  <div class="issue-description">
+                    The server does not implement rate limiting for API calls. This could lead to excessive API usage, increased costs, or service throttling. Consider implementing a rate limiter.
+                  </div>
+                  <div class="issue-fix">
+                    <div class="issue-fix-title">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Suggested Fix
+                    </div>
+                    <div style="color: var(--color-text-secondary);">
+                      Add rate limiting middleware using <code class="code-inline">bottleneck</code> or similar library
+                    </div>
+                  </div>
+                  <button class="btn btn-primary btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Apply Fix
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Info Issue -->
+            <div class="card issue-card info">
+              <div class="issue-header">
+                <span class="badge badge-info">INFO</span>
+                <div class="issue-content">
+                  <div class="issue-title">Missing TypeScript Strict Mode</div>
+                  <div class="issue-location">tsconfig.json</div>
+                  <div class="issue-description">
+                    TypeScript strict mode is not enabled. Enabling strict mode helps catch more potential bugs at compile time and improves code quality.
+                  </div>
+                  <div class="issue-fix">
+                    <div class="issue-fix-title">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Suggested Fix
+                    </div>
+                    <div style="color: var(--color-text-secondary);">
+                      Add <code class="code-inline">"strict": true</code> to tsconfig.json compilerOptions
+                    </div>
+                  </div>
+                  <button class="btn btn-secondary btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Apply Fix
+                  </button>
+                </div>
+              </div>
+            </div>
+
+            <!-- Info Issue 2 -->
+            <div class="card issue-card info">
+              <div class="issue-header">
+                <span class="badge badge-info">INFO</span>
+                <div class="issue-content">
+                  <div class="issue-title">Consider Adding Logging</div>
+                  <div class="issue-location">server.ts:general</div>
+                  <div class="issue-description">
+                    No structured logging is implemented. Adding logging helps with debugging and monitoring in production environments. Consider using a logging library like Winston or Pino.
+                  </div>
+                  <div class="issue-fix">
+                    <div class="issue-fix-title">
+                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      Suggested Fix
+                    </div>
+                    <div style="color: var(--color-text-secondary);">
+                      Install and configure <code class="code-inline">pino</code> for structured JSON logging
+                    </div>
+                  </div>
+                  <button class="btn btn-secondary btn-sm">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Apply Fix
+                  </button>
+                </div>
+              </div>
+            </div>
+
+          </div>
+
+          <!-- Action Bar -->
+          <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: space-between;">
+            <div>
+              <div style="font-weight: 600; margin-bottom: 4px;">Ready to deploy?</div>
+              <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                Fix critical issues before deploying to production
+              </div>
+            </div>
+            <div style="display: flex; gap: var(--space-2);">
+              <button class="btn btn-secondary">
+                Fix All Critical Issues
+              </button>
+              <button class="btn btn-primary" onclick="window.location.href='deployment.html'">
+                Continue to Deployment
+                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </button>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    // Filter functionality
+    const filterBtns = document.querySelectorAll('.filter-btn');
+    
+    filterBtns.forEach(btn => {
+      btn.addEventListener('click', function() {
+        // Remove active from same group
+        if (this.dataset.filter) {
+          document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
+        } else if (this.dataset.category) {
+          document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));
+        }
+        
+        this.classList.toggle('active');
+        
+        // In a real app, this would filter the issues list
+        console.log('Filter:', this.dataset.filter || this.dataset.category);
+      });
+    });
+  </script>
+</body>
+</html>

@@ -1,0 +1,507 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bob MCP Forge - Deployment</title>
+  <link rel="stylesheet" href="../styles/global.css">
+  <link rel="stylesheet" href="../styles/design-system.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .checklist-item {
+      display: flex;
+      align-items: flex-start;
+      gap: var(--space-2);
+      padding: var(--space-2);
+      border-radius: var(--radius-md);
+      transition: background var(--transition-fast);
+    }
+    
+    .checklist-item:hover {
+      background: var(--color-bg-secondary);
+    }
+    
+    .checklist-icon {
+      width: 24px;
+      height: 24px;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+    }
+    
+    .checklist-icon.complete {
+      background: var(--color-success);
+      color: white;
+    }
+    
+    .checklist-icon.pending {
+      background: var(--color-bg-secondary);
+      border: 2px solid var(--color-border);
+    }
+    
+    .checklist-content {
+      flex: 1;
+    }
+    
+    .checklist-title {
+      font-weight: 600;
+      font-size: var(--font-size-base);
+      margin-bottom: 4px;
+    }
+    
+    .checklist-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+    }
+    
+    .deployment-status {
+      text-align: center;
+      padding: var(--space-6);
+    }
+    
+    .status-icon {
+      width: 80px;
+      height: 80px;
+      margin: 0 auto var(--space-3);
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+    }
+    
+    .status-icon.deploying {
+      background: var(--color-info-light);
+      color: var(--color-info);
+    }
+    
+    .status-icon.success {
+      background: var(--color-success-light);
+      color: var(--color-success);
+    }
+    
+    .status-icon.error {
+      background: var(--color-error-light);
+      color: var(--color-error);
+    }
+    
+    @keyframes rotate {
+      to { transform: rotate(360deg); }
+    }
+    
+    .rotating {
+      animation: rotate 2s linear infinite;
+    }
+    
+    .url-display {
+      display: flex;
+      align-items: center;
+      gap: var(--space-2);
+      padding: var(--space-3);
+      background: var(--color-bg-secondary);
+      border-radius: var(--radius-lg);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-base);
+    }
+    
+    .url-text {
+      flex: 1;
+      color: var(--color-primary);
+      word-break: break-all;
+    }
+    
+    .deployment-log {
+      background: #1e1e1e;
+      color: #d4d4d4;
+      font-family: var(--font-mono);
+      font-size: var(--font-size-sm);
+      padding: var(--space-3);
+      border-radius: var(--radius-lg);
+      max-height: 300px;
+      overflow-y: auto;
+      line-height: 1.6;
+    }
+    
+    .log-line {
+      margin-bottom: 4px;
+    }
+    
+    .log-timestamp {
+      color: #858585;
+      margin-right: var(--space-2);
+    }
+    
+    .log-success {
+      color: #4ec9b0;
+    }
+    
+    .log-info {
+      color: #4589ff;
+    }
+    
+    .log-warning {
+      color: #f1c21b;
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <a href="../index.html" class="app-logo">
+        <div class="app-logo-icon">B</div>
+        <span>Bob MCP Forge</span>
+      </a>
+      <nav class="app-nav">
+        <a href="../index.html" class="nav-link">Home</a>
+        <a href="../documentation.html" class="nav-link">Documentation</a>
+        <button class="btn btn-secondary" onclick="window.location.href='compliance.html'">
+          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M10 12L6 8L10 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+          Back to Compliance
+        </button>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+      <div class="screen screen-centered">
+        <div style="max-width: 800px; width: 100%;">
+          
+          <!-- Pre-deployment State -->
+          <div id="pre-deployment">
+            
+            <!-- Page Header -->
+            <div style="text-align: center; margin-bottom: var(--space-6);">
+              <h1 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">
+                Deploy to IBM Cloud
+              </h1>
+              <p style="font-size: var(--font-size-base); color: var(--color-text-secondary);">
+                Your MCP server is ready to deploy. Review the checklist below.
+              </p>
+            </div>
+
+            <!-- Readiness Checklist -->
+            <div class="card" style="padding: var(--space-4); margin-bottom: var(--space-4);">
+              <h3 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-3);">
+                Deployment Readiness
+              </h3>
+              
+              <div style="display: flex; flex-direction: column; gap: var(--space-1);">
+                
+                <div class="checklist-item">
+                  <div class="checklist-icon complete">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 7L5 10L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="checklist-content">
+                    <div class="checklist-title">Code Generated</div>
+                    <div class="checklist-description">MCP server code successfully generated</div>
+                  </div>
+                </div>
+
+                <div class="checklist-item">
+                  <div class="checklist-icon complete">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 7L5 10L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="checklist-content">
+                    <div class="checklist-title">Dependencies Validated</div>
+                    <div class="checklist-description">All required packages are available</div>
+                  </div>
+                </div>
+
+                <div class="checklist-item">
+                  <div class="checklist-icon complete">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 7L5 10L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="checklist-content">
+                    <div class="checklist-title">Dockerfile Created</div>
+                    <div class="checklist-description">Container configuration ready</div>
+                  </div>
+                </div>
+
+                <div class="checklist-item">
+                  <div class="checklist-icon complete">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 7L5 10L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="checklist-content">
+                    <div class="checklist-title">Environment Variables Set</div>
+                    <div class="checklist-description">Required configuration values provided</div>
+                  </div>
+                </div>
+
+                <div class="checklist-item">
+                  <div class="checklist-icon complete">
+                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M2 7L5 10L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="checklist-content">
+                    <div class="checklist-title">Compliance Checks Passed</div>
+                    <div class="checklist-description">No critical issues detected</div>
+                  </div>
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Deployment Options -->
+            <div class="card" style="padding: var(--space-4); margin-bottom: var(--space-4);">
+              <h3 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-3);">
+                Deployment Configuration
+              </h3>
+              
+              <div style="display: flex; flex-direction: column; gap: var(--space-3);">
+                
+                <div>
+                  <label style="display: block; font-weight: 500; margin-bottom: var(--space-1); font-size: var(--font-size-sm);">
+                    Region
+                  </label>
+                  <select class="input select">
+                    <option>us-south (Dallas)</option>
+                    <option>us-east (Washington DC)</option>
+                    <option>eu-gb (London)</option>
+                    <option>eu-de (Frankfurt)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style="display: block; font-weight: 500; margin-bottom: var(--space-1); font-size: var(--font-size-sm);">
+                    Instance Size
+                  </label>
+                  <select class="input select">
+                    <option>Small (1 vCPU, 2GB RAM)</option>
+                    <option selected>Medium (2 vCPU, 4GB RAM)</option>
+                    <option>Large (4 vCPU, 8GB RAM)</option>
+                  </select>
+                </div>
+
+                <div>
+                  <label style="display: block; font-weight: 500; margin-bottom: var(--space-1); font-size: var(--font-size-sm);">
+                    Server Name
+                  </label>
+                  <input type="text" class="input" value="weather-mcp-server" placeholder="my-mcp-server">
+                </div>
+
+              </div>
+            </div>
+
+            <!-- Deploy Button -->
+            <button class="btn btn-primary btn-lg w-full" id="deploy-btn" onclick="startDeployment()">
+              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M3 10H17M17 10L12 5M17 10L12 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              Deploy to IBM Cloud
+            </button>
+
+            <div style="margin-top: var(--space-2); text-align: center; font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+              Deployment typically takes 2-3 minutes
+            </div>
+
+          </div>
+
+          <!-- Deploying State -->
+          <div id="deploying-state" class="hidden">
+            <div class="card" style="padding: var(--space-6);">
+              
+              <div class="deployment-status">
+                <div class="status-icon deploying">
+                  <svg class="rotating" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M20 4V12M20 28V36M36 20H28M12 20H4M31.3137 8.68629L25.6569 14.3431M14.3431 25.6569L8.68629 31.3137M31.3137 31.3137L25.6569 25.6569M14.3431 14.3431L8.68629 8.68629" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+                  </svg>
+                </div>
+                <h2 style="font-size: var(--font-size-2xl); font-weight: 700; margin-bottom: var(--space-2);">
+                  Deploying to IBM Cloud
+                </h2>
+                <p style="font-size: var(--font-size-base); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
+                  Building container and provisioning resources...
+                </p>
+                <div class="progress-bar" style="max-width: 400px; margin: 0 auto;">
+                  <div class="progress-bar-fill" id="deploy-progress" style="width: 0%;"></div>
+                </div>
+              </div>
+
+              <!-- Deployment Log -->
+              <div style="margin-top: var(--space-4);">
+                <h3 style="font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.5px;">
+                  Deployment Log
+                </h3>
+                <div class="deployment-log" id="deployment-log">
+                  <div class="log-line">
+                    <span class="log-timestamp">[15:42:01]</span>
+                    <span class="log-info">Starting deployment process...</span>
+                  </div>
+                </div>
+              </div>
+
+            </div>
+          </div>
+
+          <!-- Success State -->
+          <div id="success-state" class="hidden">
+            <div class="card" style="padding: var(--space-6);">
+              
+              <div class="deployment-status">
+                <div class="status-icon success">
+                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M8 20L16 28L32 12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </div>
+                <h2 style="font-size: var(--font-size-2xl); font-weight: 700; margin-bottom: var(--space-2);">
+                  Deployment Successful!
+                </h2>
+                <p style="font-size: var(--font-size-base); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
+                  Your MCP server is now live and ready to use
+                </p>
+              </div>
+
+              <!-- Live URL -->
+              <div style="margin-bottom: var(--space-4);">
+                <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); font-size: var(--font-size-sm);">
+                  Live URL
+                </label>
+                <div class="url-display">
+                  <span class="url-text" id="live-url">https://weather-mcp-server.us-south.cf.appdomain.cloud</span>
+                  <button class="btn btn-secondary" onclick="copyUrl()">
+                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M5 5V3C5 2.44772 5.44772 2 6 2H13C13.5523 2 14 2.44772 14 3V10C14 10.5523 13.5523 11 13 11H11M3 5H10C10.5523 5 11 5.44772 11 6V13C11 13.5523 10.5523 14 10 14H3C2.44772 14 2 13.5523 2 13V6C2 5.44772 2.44772 5 3 5Z" stroke="currentColor" stroke-width="1.5"/>
+                    </svg>
+                    Copy
+                  </button>
+                </div>
+              </div>
+
+              <!-- Status Info -->
+              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-4);">
+                
+                <div style="text-align: center; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+                  <div style="display: flex; align-items: center; justify-content: center; gap: var(--space-1); margin-bottom: 4px;">
+                    <span class="status-dot success"></span>
+                    <span style="font-weight: 600; font-size: var(--font-size-sm);">Status</span>
+                  </div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">Running</div>
+                </div>
+
+                <div style="text-align: center; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+                  <div style="font-weight: 600; font-size: var(--font-size-sm); margin-bottom: 4px;">Region</div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">us-south</div>
+                </div>
+
+                <div style="text-align: center; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
+                  <div style="font-weight: 600; font-size: var(--font-size-sm); margin-bottom: 4px;">Instance</div>
+                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">Medium</div>
+                </div>
+
+              </div>
+
+              <!-- Actions -->
+              <div style="display: flex; gap: var(--space-2);">
+                <button class="btn btn-secondary flex-1" onclick="window.location.href='../index.html'">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 8L8 2M8 2L14 8M8 2V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Back to Home
+                </button>
+                <button class="btn btn-primary flex-1" onclick="window.location.href='landing.html'">
+                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M2 8L8 2M8 2L14 8M8 2V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  Create New Server
+                </button>
+              </div>
+
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </main>
+  </div>
+
+  <script>
+    function startDeployment() {
+      // Hide pre-deployment, show deploying
+      document.getElementById('pre-deployment').classList.add('hidden');
+      document.getElementById('deploying-state').classList.remove('hidden');
+      
+      // Simulate deployment progress
+      let progress = 0;
+      const progressBar = document.getElementById('deploy-progress');
+      const log = document.getElementById('deployment-log');
+      
+      const logs = [
+        { time: '15:42:02', text: 'Building Docker image...', type: 'info' },
+        { time: '15:42:15', text: 'Image built successfully', type: 'success' },
+        { time: '15:42:16', text: 'Pushing to IBM Cloud Registry...', type: 'info' },
+        { time: '15:42:28', text: 'Image pushed successfully', type: 'success' },
+        { time: '15:42:29', text: 'Creating Cloud Foundry app...', type: 'info' },
+        { time: '15:42:35', text: 'App created successfully', type: 'success' },
+        { time: '15:42:36', text: 'Deploying application...', type: 'info' },
+        { time: '15:42:50', text: 'Application deployed successfully', type: 'success' },
+        { time: '15:42:51', text: 'Starting health checks...', type: 'info' },
+        { time: '15:42:58', text: 'Health checks passed', type: 'success' },
+        { time: '15:42:59', text: 'Deployment complete!', type: 'success' }
+      ];
+      
+      let logIndex = 0;
+      
+      const interval = setInterval(() => {
+        progress += 10;
+        progressBar.style.width = progress + '%';
+        
+        if (logIndex < logs.length) {
+          const logEntry = logs[logIndex];
+          const logLine = document.createElement('div');
+          logLine.className = 'log-line';
+          logLine.innerHTML = `
+            <span class="log-timestamp">[${logEntry.time}]</span>
+            <span class="log-${logEntry.type}">${logEntry.text}</span>
+          `;
+          log.appendChild(logLine);
+          log.scrollTop = log.scrollHeight;
+          logIndex++;
+        }
+        
+        if (progress >= 100) {
+          clearInterval(interval);
+          setTimeout(() => {
+            document.getElementById('deploying-state').classList.add('hidden');
+            document.getElementById('success-state').classList.remove('hidden');
+          }, 1000);
+        }
+      }, 800);
+    }
+    
+    function copyUrl() {
+      const url = document.getElementById('live-url').textContent;
+      navigator.clipboard.writeText(url);
+      
+      // Show feedback
+      const btn = event.target.closest('button');
+      const originalHTML = btn.innerHTML;
+      btn.innerHTML = `
+        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M3 8L6 11L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Copied!
+      `;
+      
+      setTimeout(() => {
+        btn.innerHTML = originalHTML;
+      }, 2000);
+    }
+  </script>
+</body>
+</html>

@@ -34,7 +34,7 @@ app.get('/health', (req, res) => {
 });
 
 // API routes
-app.post('/api/v1/generate', generateRoute);
+app.use('/api/v1/generate', generateRoute);
 app.use('/api/v1/jobs', jobsRoute);
 
 // 404 handler

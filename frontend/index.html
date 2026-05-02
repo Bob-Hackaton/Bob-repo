@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Bob MCP Forge - AI Developer Tool</title>
+  <link rel="stylesheet" href="styles/global.css">
+  <link rel="stylesheet" href="styles/design-system.css">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <style>
+    .hero-section {
+      text-align: center;
+      padding: var(--space-12) var(--space-4);
+      background: linear-gradient(180deg, var(--color-bg) 0%, var(--color-bg-secondary) 100%);
+    }
+    
+    .hero-title {
+      font-size: 48px;
+      font-weight: 700;
+      margin-bottom: var(--space-3);
+      line-height: 1.2;
+    }
+    
+    .hero-subtitle {
+      font-size: var(--font-size-xl);
+      color: var(--color-text-secondary);
+      max-width: 700px;
+      margin: 0 auto var(--space-6);
+    }
+    
+    .cta-buttons {
+      display: flex;
+      gap: var(--space-2);
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+    
+    @media (max-width: 768px) {
+      .hero-title {
+        font-size: 32px;
+      }
+      
+      .hero-subtitle {
+        font-size: var(--font-size-base);
+      }
+      
+      .cta-buttons {
+        flex-direction: column;
+        align-items: stretch;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div id="app">
+    <!-- Header -->
+    <header class="app-header">
+      <a href="index.html" class="app-logo">
+        <div class="app-logo-icon"> <\> </div>
+        <span>Bob MCP Forge</span>
+      </a>
+      <nav class="app-nav">
+        <a href="index.html" class="nav-link">Home</a>
+        <a href="#features" class="nav-link">Features</a>
+        <a href="#team" class="nav-link">Team</a>
+        <a href="documentation.html" class="nav-link">Documentation</a>
+        <a href="https://github.com/bob-mcp-forge/bob-mcp-forge" class="nav-link" target="_blank" rel="noopener noreferrer">GitHub</a>
+        <button class="btn btn-primary" onclick="window.location.href='screens/landing.html'">
+          Get Started
+        </button>
+      </nav>
+    </header>
+
+    <!-- Main Content -->
+    <main class="app-main">
+      
+      <!-- Hero Section -->
+      <section class="hero-section">
+        <h1 class="hero-title">
+          Build MCP Servers with AI
+        </h1>
+        <p class="hero-subtitle">
+          Describe your tool in plain English. Get production-ready MCP server code with built-in compliance checks and one-click deployment to IBM Cloud.
+        </p>
+        <div class="cta-buttons">
+          <button class="btn btn-primary btn-lg" onclick="window.location.href='screens/landing.html'">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Start Building
+          </button>
+          <button class="btn btn-secondary btn-lg" onclick="window.location.href='screens/landing.html'">
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M10 18C14.4183 18 18 14.4183 18 10C18 5.58172 14.4183 2 10 2C5.58172 2 2 5.58172 2 10C2 14.4183 5.58172 18 10 18Z" stroke="currentColor" stroke-width="1.5"/>
+              <path d="M8 10L10.5 12.5L13 9.5" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            View Demo
+          </button>
+        </div>
+      </section>
+
+      <!-- Features Section -->
+      <section id="features" style="padding: var(--space-10) var(--space-4);">
+        <div class="container" style="max-width: var(--max-width-xl);">
+          
+          <div style="text-align: center; margin-bottom: var(--space-8);">
+            <h2 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">
+              Everything You Need
+            </h2>
+            <p style="font-size: var(--font-size-lg); color: var(--color-text-secondary);">
+              From prompt to production in minutes
+            </p>
+          </div>
+
+          <div style="display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: var(--space-4);">
+            
+            <!-- Feature 1 -->
+            <div class="card" style="padding: var(--space-4);">
+              <div style="width: 48px; height: 48px; background: var(--color-primary-light); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-3);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 style="font-size: var(--font-size-xl); font-weight: 600; margin-bottom: var(--space-2);">
+                AI-Powered Generation
+              </h3>
+              <p style="color: var(--color-text-secondary); line-height: var(--line-height-relaxed);">
+                Describe your MCP tool in plain English and get complete, production-ready TypeScript code in seconds.
+              </p>
+            </div>
+
+            <!-- Feature 2 -->
+            <div class="card" style="padding: var(--space-4);">
+              <div style="width: 48px; height: 48px; background: var(--color-success-light); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-3);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 style="font-size: var(--font-size-xl); font-weight: 600; margin-bottom: var(--space-2);">
+                Built-in Compliance
+              </h3>
+              <p style="color: var(--color-text-secondary); line-height: var(--line-height-relaxed);">
+                Automatic security, performance, and policy checks with detailed reports and one-click fixes.
+              </p>
+            </div>
+
+            <!-- Feature 3 -->
+            <div class="card" style="padding: var(--space-4);">
+              <div style="width: 48px; height: 48px; background: var(--color-info-light); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-3);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M7 16V4M7 4L3 8M7 4L11 8M17 8V20M17 20L21 16M17 20L13 16" stroke="var(--color-info)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 style="font-size: var(--font-size-xl); font-weight: 600; margin-bottom: var(--space-2);">
+                One-Click Deploy
+              </h3>
+              <p style="color: var(--color-text-secondary); line-height: var(--line-height-relaxed);">
+                Deploy your MCP server to IBM Cloud instantly with automatic containerization and configuration.
+              </p>
+            </div>
+
+            <!-- Feature 4 -->
+            <div class="card" style="padding: var(--space-4);">
+              <div style="width: 48px; height: 48px; background: var(--color-primary-light); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-3);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M8 2L2 8L8 14M16 2L22 8L16 14M12 2V22" stroke="var(--color-primary)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 style="font-size: var(--font-size-xl); font-weight: 600; margin-bottom: var(--space-2);">
+                Full Code Access
+              </h3>
+              <p style="color: var(--color-text-secondary); line-height: var(--line-height-relaxed);">
+                View, edit, and download all generated code. Complete transparency with syntax highlighting and file tree navigation.
+              </p>
+            </div>
+
+            <!-- Feature 5 -->
+            <div class="card" style="padding: var(--space-4);">
+              <div style="width: 48px; height: 48px; background: var(--color-success-light); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-3);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  <path d="M2 17L12 22L22 17M2 12L12 17L22 12" stroke="var(--color-success)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <h3 style="font-size: var(--font-size-xl); font-weight: 600; margin-bottom: var(--space-2);">
+                MCP Protocol
+              </h3>
+              <p style="color: var(--color-text-secondary); line-height: var(--line-height-relaxed);">
+                Fully compliant with Model Context Protocol specifications. Works with Claude and other AI assistants.
+              </p>
+            </div>
+
+            <!-- Feature 6 -->
+            <div class="card" style="padding: var(--space-4);">
+              <div style="width: 48px; height: 48px; background: var(--color-info-light); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-3);">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="var(--color-info)" stroke-width="2"/>
+                  <path d="M12 6V12L16 14" stroke="var(--color-info)" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+              </div>
+              <h3 style="font-size: var(--font-size-xl); font-weight: 600; margin-bottom: var(--space-2);">
+                Fast Generation
+              </h3>
+              <p style="color: var(--color-text-secondary); line-height: var(--line-height-relaxed);">
+                Complete MCP server generation in 15-30 seconds. From idea to deployment in under 5 minutes.
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+      <!-- CTA Section -->
+      <section style="padding: var(--space-10) var(--space-4); background: var(--color-bg-secondary);">
+        <div class="container" style="max-width: 800px; text-align: center;">
+          <h2 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">
+            Ready to Build?
+          </h2>
+          <p style="font-size: var(--font-size-lg); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
+            Start creating production-ready MCP servers in minutes
+          </p>
+          <button class="btn btn-primary btn-lg" onclick="window.location.href='screens/landing.html'">
+            Get Started Free
+            <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          </button>
+        </div>
+      </section>
+
+      <!-- Team Section -->
+      <section id="team" style="padding: var(--space-10) var(--space-4);">
+        <div class="container" style="max-width: var(--max-width-lg);">
+          
+          <div style="text-align: center; margin-bottom: var(--space-8);">
+            <h2 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">
+              Meet the Team
+            </h2>
+          </div>
+
+          <div style="display: flex; justify-content: center; align-items: flex-start; gap: var(--space-6); flex-wrap: wrap;">
+            
+            <!-- Team Member 1: Anthony Merlin -->
+            <div style="text-align: center; max-width: 140px;">
+              <a href="https://www.linkedin.com/in/anthony-merlin-304390228/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: block;">
+                <img src="team/anthony.jpg" alt="Anthony Merlin" class="team-avatar" style="width: 112px; height: 112px; border-radius: 50%; object-fit: cover; margin: 0 auto var(--space-2); transition: transform var(--transition-base), box-shadow var(--transition-base);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                <h3 style="font-size: var(--font-size-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px;">
+                  Anthony Merlin
+                </h3>
+              </a>
+              <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                Architecture
+              </p>
+            </div>
+
+            <!-- Team Member 2: Alejandro Sierraalta -->
+            <div style="text-align: center; max-width: 140px;">
+              <a href="https://www.linkedin.com/in/alejandrosierraalta/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: block;">
+                <img src="team/alejandro.webp" alt="Alejandro Sierraalta" class="team-avatar" style="width: 112px; height: 112px; border-radius: 50%; object-fit: cover; margin: 0 auto var(--space-2); transition: transform var(--transition-base), box-shadow var(--transition-base);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                <h3 style="font-size: var(--font-size-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px;">
+                  Alejandro Sierraalta
+                </h3>
+              </a>
+              <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                MCP Generator
+              </p>
+            </div>
+
+            <!-- Team Member 3: Dilshad Shaik -->
+            <div style="text-align: center; max-width: 140px;">
+              <a href="https://www.linkedin.com/in/dilshad-shaik-43bb4419a/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: block;">
+                <img src="team/dilshad.webp" alt="Dilshad Shaik" class="team-avatar" style="width: 112px; height: 112px; border-radius: 50%; object-fit: cover; margin: 0 auto var(--space-2); transition: transform var(--transition-base), box-shadow var(--transition-base);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                <h3 style="font-size: var(--font-size-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px;">
+                  Dilshad Shaik
+                </h3>
+              </a>
+              <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                Backend
+              </p>
+            </div>
+
+            <!-- Team Member 4: Tien Nguyen Borland -->
+            <div style="text-align: center; max-width: 140px;">
+              <a href="https://www.linkedin.com/in/tien-borland/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: block;">
+                <img src="team/tien.jpg" alt="Tien Nguyen Borland" class="team-avatar" style="width: 112px; height: 112px; border-radius: 50%; object-fit: cover; margin: 0 auto var(--space-2); transition: transform var(--transition-base), box-shadow var(--transition-base);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                <h3 style="font-size: var(--font-size-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px;">
+                  Tien Nguyen Borland
+                </h3>
+              </a>
+              <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                Frontend
+              </p>
+            </div>
+
+            <!-- Team Member 5: Sadia Mehmood -->
+            <div style="text-align: center; max-width: 140px;">
+              <a href="https://www.linkedin.com/in/sadia-mehmood--/" target="_blank" rel="noopener noreferrer" style="text-decoration: none; display: block;">
+                <img src="team/sadia.webp" alt="Sadia Mehmood" class="team-avatar" style="width: 112px; height: 112px; border-radius: 50%; object-fit: cover; margin: 0 auto var(--space-2); transition: transform var(--transition-base), box-shadow var(--transition-base);" onmouseover="this.style.transform='scale(1.05)'; this.style.boxShadow='0 4px 12px rgba(0, 0, 0, 0.1)'" onmouseout="this.style.transform='scale(1)'; this.style.boxShadow='none'">
+                <h3 style="font-size: var(--font-size-base); font-weight: 600; color: var(--color-text-primary); margin-bottom: 4px;">
+                  Sadia Mehmood
+                </h3>
+              </a>
+              <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+                Product Designer & Experience Lead
+              </p>
+            </div>
+
+          </div>
+        </div>
+      </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer style="padding: var(--space-4); border-top: 1px solid var(--color-border); text-align: center; color: var(--color-text-secondary); font-size: var(--font-size-sm);">
+      <p>© 2026 Bob MCP Forge. Built with ❤️ for developers.</p>
+    </footer>
+  </div>
+</body>
+</html>
