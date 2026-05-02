@@ -1,7 +1,6 @@
-const mongoose = require('../db/database');
+const mongoose = require('mongoose');
 
 // Define the Job schema
-// Using mongoose.Schema because our mock DB helper exports real mongoose properties
 const jobSchema = new mongoose.Schema({
   jobId: {
     type: String,
@@ -265,13 +264,12 @@ class JobModel {
     if (status) query.status = status;
     if (userId) query.userId = userId;
     
-    const jobs = await Job.find(query);
+    const jobs = await Job.find(query)
+      .sort({ createdAt: -1 })
+      .limit(limit)
+      .skip(offset);
     
-    // Manual slicing for mock find which doesn't support limit/skip
-    const sliced = jobs.sort((a, b) => b.createdAt - a.createdAt)
-                       .slice(offset, offset + limit);
-    
-    return sliced.map(job => this._formatJob(job));
+    return jobs.map(job => this._formatJob(job));
   }
 
   /**
@@ -327,3 +325,5 @@ class JobModel {
 }
 
 module.exports = JobModel;
+
+// Made with Bob
