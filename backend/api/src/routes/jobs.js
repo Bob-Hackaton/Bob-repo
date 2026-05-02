@@ -10,7 +10,7 @@ router.get('/:jobId', async (req, res) => {
   try {
     const { jobId } = req.params;
     
-    const job = Job.findById(jobId);
+    const job = await Job.findById(jobId);
     
     if (!job) {
       return res.status(404).json({
@@ -44,7 +44,7 @@ router.get('/', async (req, res) => {
   try {
     const { status, limit = 20, offset = 0 } = req.query;
     
-    const jobs = Job.list({
+    const jobs = await Job.list({
       status,
       userId: req.userId || null,
       limit: parseInt(limit),
@@ -78,7 +78,7 @@ router.delete('/:jobId', async (req, res) => {
   try {
     const { jobId } = req.params;
     
-    const deleted = Job.delete(jobId);
+    const deleted = await Job.delete(jobId);
     
     if (!deleted) {
       return res.status(404).json({
@@ -116,7 +116,7 @@ router.post('/:jobId/fix', async (req, res) => {
     const { jobId } = req.params;
     const { fixIds } = req.body;
     
-    const job = Job.findById(jobId);
+    const job = await Job.findById(jobId);
     
     if (!job) {
       return res.status(404).json({
@@ -169,7 +169,7 @@ router.post('/:jobId/deploy', async (req, res) => {
     const { jobId } = req.params;
     const { region = 'us-south', instanceSize = 'small' } = req.body;
     
-    const job = Job.findById(jobId);
+    const job = await Job.findById(jobId);
     
     if (!job) {
       return res.status(404).json({
@@ -210,7 +210,7 @@ router.get('/:jobId/deployment', async (req, res) => {
   try {
     const { jobId } = req.params;
     
-    const job = Job.findById(jobId);
+    const job = await Job.findById(jobId);
     
     if (!job) {
       return res.status(404).json({

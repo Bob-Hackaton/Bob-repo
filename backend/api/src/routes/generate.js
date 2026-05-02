@@ -46,19 +46,25 @@ router.post('/', async (req, res) => {
       });
     }
     
+    // Create job first so polling can observe the completed state after audit
+    const job = await Job.create({
+      description: description.trim(),
+      complianceProfile: profile,
+      userId: req.userId || null,
+    });
+
+    await Job.updateStatus(job.jobId, 'generating', 10);
+
     // Run compliance audit (generate + audit)
     const auditResult = await runComplianceAudit({
       description: description.trim(),
       complianceProfile: profile,
       userId: req.userId || null,
     });
-    
-    // Create job with audit results
-    const job = await Job.create({
-      description: description.trim(),
-      complianceProfile: profile,
-      userId: req.userId || null,
-    });
+
+    await Job.updateGeneration(job.jobId, 'completed', { files: auditResult.generatedFiles });
+    await Job.updateCompliance(job.jobId, 'completed', auditResult.auditResult);
+    await Job.updateStatus(job.jobId, 'generated', 100);
     
     res.status(201).json({
       jobId: job.jobId,
