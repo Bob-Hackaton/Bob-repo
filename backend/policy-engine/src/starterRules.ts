@@ -9,7 +9,7 @@ export const starterRules: ComplianceRule[] = [
     description: "Detects hardcoded API keys, passwords, tokens, or secrets assigned inline.",
     pattern: {
       type: "regex",
-      expression: String.raw`\b(api[_-]?key|password|token|secret)\b\s*[:=]\s*['"][^'"]{8,}['"]`,
+      expression: String.raw`\b(?:api[_-]?key|password|token|secret)\b\s*[:=]\s*['"][^'"]{8,}['"]`,
     },
     auto_fix: {
       type: "env_var",

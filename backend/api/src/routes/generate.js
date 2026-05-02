@@ -1,10 +1,11 @@
 const express = require('express');
 const router = express.Router();
 const Job = require('../models/job');
+const { runComplianceAudit } = require('../services/complianceService');
 
 /**
  * POST /api/v1/generate
- * Create a new MCP server generation job
+ * Create a new MCP server generation job and run compliance audit
  */
 router.post('/', async (req, res) => {
   try {
@@ -45,21 +46,27 @@ router.post('/', async (req, res) => {
       });
     }
     
-    // Create job
-    const job = Job.create({
+    // Run compliance audit (generate + audit)
+    const auditResult = await runComplianceAudit({
       description: description.trim(),
       complianceProfile: profile,
-      userId: req.userId || null // Will be set when auth is implemented
+      userId: req.userId || null,
     });
     
-    // TODO: Start background processing
-    // For Day 1, we just create the job and return
-    // On Day 2, we'll trigger the actual pipeline
+    // Create job with audit results
+    const job = await Job.create({
+      description: description.trim(),
+      complianceProfile: profile,
+      userId: req.userId || null,
+    });
     
     res.status(201).json({
       jobId: job.jobId,
-      status: job.status,
-      message: 'MCP server generation started'
+      status: 'generated',
+      message: 'MCP server generated and audited',
+      complianceReport: auditResult.auditResult,
+      generatedFiles: auditResult.generatedFiles,
+      complianceProfile: auditResult.complianceProfile,
     });
     
   } catch (error) {
@@ -75,5 +82,3 @@ router.post('/', async (req, res) => {
 });
 
 module.exports = router;
-
-// Made with Bob
