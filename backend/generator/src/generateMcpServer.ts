@@ -12,12 +12,19 @@ import { generateEnvExample } from './templates/envExample.js';
 import { generateReadme } from './templates/readme.js';
 import { generateDockerfile } from './templates/dockerfile.js';
 import { generateManifestJson } from './templates/manifestJson.js';
+import type { IBobClient } from './bob/client.js';
+import { createBobClient } from './bob/factory.js';
+import { BobValidator } from './bob/validator.js';
+import { BobAdapter } from './bob/adapter.js';
 
 /**
  * Generate MCP server project files from input description.
- * For Day 1, uses hardcoded template for "customer lookup" demo.
+ * Uses dynamic Bob integration with fallback to template.
  */
-export function generateMcpServer(input: GenerateMcpServerInput): GenerateMcpServerOutput {
+export async function generateMcpServer(
+  input: GenerateMcpServerInput,
+  client: IBobClient = createBobClient()
+): Promise<GenerateMcpServerOutput> {
   try {
     // Validate input
     if (!input || typeof input !== 'object') {
@@ -27,8 +34,28 @@ export function generateMcpServer(input: GenerateMcpServerInput): GenerateMcpSer
       throw new Error('Invalid input: description is required');
     }
 
-    // For Day 1: hardcoded demo description
     const description = input.description;
+
+    try {
+      if (client.constructor.name !== 'MockBobClient') {
+        const response = await client.generate({
+          description,
+          systemInstructions: 'Generate a secure and robust MCP server that implements the following tool description. Follow the schema strictly.'
+        });
+        const validationResult = BobValidator.validate(response);
+        if (validationResult.valid) {
+          const output = BobAdapter.toGeneratorOutput(response, 'bob');
+          output.metadata.warnings = [
+            ...output.metadata.warnings,
+            ...validationResult.errors.map(e => e.message)
+          ];
+          return output;
+        }
+        console.warn('Bob validation failed, falling back to template:', validationResult.errors);
+      }
+    } catch (error) {
+      console.warn('Bob generation failed, falling back to template:', error instanceof Error ? error.message : String(error));
+    }
 
     // Derive names from description
     const toolName = toToolName(description);

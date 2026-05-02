@@ -16,7 +16,7 @@ async function runDemo(): Promise<void> {
 
   try {
     // Generate MCP server
-    const output = generateMcpServer({ description: DEMO_DESCRIPTION });
+    const output = await generateMcpServer({ description: DEMO_DESCRIPTION });
 
     // Create output directory
     const fullOutputDir = path.resolve(OUTPUT_DIR);

@@ -6,9 +6,10 @@ This manual provides a comprehensive guide on operating the MCP Server Generator
 
 ## 🚀 Quick Start Checklist
 1. [ ] **Setup**: `cd backend/generator && npm install`
-2. [ ] **Generate**: `npm run generate:demo`
-3. [ ] **Prepare Product**: `cd generated/customer-lookup-mcp && npm install && npm run build`
-4. [ ] **Connect**: Add the server to your `mcp_config.json` (Local) or use the SSE URL (Cloud).
+2. [ ] **Configure Bob (Optional)**: Set `BOB_API_KEY` to enable agentic generation.
+3. [ ] **Generate**: `npm run generate:demo`
+4. [ ] **Prepare Product**: `cd generated/customer-lookup-mcp && npm install && npm run build`
+5. [ ] **Connect**: Add the server to your `mcp_config.json` (Local) or use the SSE URL (Cloud).
 
 ---
 
@@ -32,15 +33,15 @@ cd backend/generator
 npm install
 ```
 
-> [!TIP]
-> **Windows Users:** If you see peer dependency errors related to the MCP SDK, use:
-> `npm install --legacy-peer-deps`
+### 🤖 IBM Bob Integration (Agentic Generation)
+The generator uses **IBM Bob** to dynamically implement tool logic.
 
-### Verify the Factory
-Run the test suite to ensure the generator engine is working correctly:
-```bash
-npm test
-```
+| Variable | Description | Default |
+|----------|-------------|---------|
+| `BOB_API_KEY` | Your IBM Bob / watsonx.ai API Key. | (Required for AI) |
+| `BOB_ENABLED` | Set to `false` to force deterministic fallback. | `true` |
+
+If no API key is provided, the generator automatically falls back to **Deterministic Templates**, ensuring you always get a functional project.
 
 ---
 
@@ -75,6 +76,12 @@ You can run the server in development mode to see it in action:
 npm run dev
 ```
 
+### Testing with MCP Inspector
+Use the official MCP Inspector to validate your server tools:
+```bash
+npx @modelcontextprotocol/inspector npm run dev
+```
+
 ---
 
 ## 5. Connecting to an MCP Host
@@ -102,19 +109,6 @@ Generated servers use the `stdio` transport by default.
 }
 ```
 
-**Claude Desktop Config:**
-Edit `%APPDATA%\Claude\claude_desktop_config.json`:
-```json
-{
-  "mcpServers": {
-    "customer-lookup": {
-      "command": "node",
-      "args": ["C:/ABSOLUTE/PATH/TO/dist/server.js"]
-    }
-  }
-}
-```
-
 ---
 
 ## 6. Cloud Deployment (IBM Code Engine)
@@ -132,28 +126,13 @@ docker build -t mcp-server-custom .
 2. Create a new "Application" in **IBM Code Engine**.
 3. Enable "Public Endpoint".
 
-### Step 3: Connect via SSE
-Cloud-deployed servers communicate via **SSE (Server-Sent Events)**.
-
-```json
-{
-  "mcpServers": {
-    "ibm-cloud-tool": {
-      "url": "https://your-app.codeengine.appdomain.cloud/sse"
-    }
-  }
-}
-```
-
-> [!IMPORTANT]
-> The current generator defaults to `stdio`. When deploying to Code Engine, make sure your code uses `SSEServerTransport` for HTTP communication.
-
 ---
 
 ## 7. Security & Best Practices
 
 The generator automatically implements these "Zero-Trust" patterns:
 
+- **Validation Gates**: AI-generated code passes through schema and security scanners.
 - **Environment Isolation**: No secrets are stored in code.
 - **Zod Validation**: All tool inputs are strictly validated against a schema.
 - **PII Protection**: Logging logic masks sensitive data (like emails or IDs).

@@ -16,7 +16,7 @@ The generator is a self-contained TypeScript module that handles the transformat
 2.  **Template Engine**:
     *   Uses structured string-literal templates to emit TypeScript code.
     *   Generates configuration files (`package.json`, `tsconfig.json`, `.env.example`).
-    *   Creates deployment artifacts (`Dockerfile`, `manifest.json`).
+    *   Generates deployment artifacts (`Dockerfile`, `manifest.json`).
 
 3.  **Validation Layer**:
     *   Leverages Zod for schema enforcement in the generated server.
@@ -41,6 +41,32 @@ TEMPL -[#red]-> OUT : "Source Code Chunks"
 OUT -[#orange]-> [Generated MCP Project] : "Emit Files"
 
 note right of TEMPL : Applies security policies\\nand best practices
+@enduml
+```
+
+### Agentic Generation (Day 2 Integration)
+Starting with Day 2, the generator supports agentic code generation via IBM Bob. This layer sits on top of the template engine, providing dynamic tool implementation logic while maintaining the template engine as a safety fallback.
+
+```puml
+@startuml
+package "MCP Generator Service" {
+    [Input Normalizer] as IN
+    [Bob Factory] as FACTORY
+    [Bob Client] as CLIENT
+    [Bob Validator] as VAL
+    [Bob Adapter] as ADAPT
+    [Template Engine] as TEMPL
+}
+
+IN -> FACTORY : "Request"
+FACTORY -> CLIENT : "Invoke (Mock or Real)"
+CLIENT -> VAL : "Raw AI Response"
+VAL -> ADAPT : "Validated Content"
+ADAPT -> TEMPL : "Inject dynamic snippets"
+TEMPL -> [Generated Project] : "Emit Files"
+
+node "IBM Bob API" as BOB
+CLIENT <..> BOB : "Async JSON-RPC"
 @enduml
 ```
 
