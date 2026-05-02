@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta http-equiv="refresh" content="0; url=frontend/index.html">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Redirecting to Bob MCP Forge...</title>
+  <style>
+    body {
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      height: 100vh;
+      margin: 0;
+      background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+      color: white;
+    }
+    .container {
+      text-align: center;
+    }
+    .spinner {
+      border: 4px solid rgba(255, 255, 255, 0.3);
+      border-radius: 50%;
+      border-top: 4px solid white;
+      width: 40px;
+      height: 40px;
+      animation: spin 1s linear infinite;
+      margin: 20px auto;
+    }
+    @keyframes spin {
+      0% { transform: rotate(0deg); }
+      100% { transform: rotate(360deg); }
+    }
+    a {
+      color: white;
+      text-decoration: underline;
+    }
+  </style>
+  <script>
+    // Fallback redirect in case meta refresh doesn't work
+    window.location.href = 'frontend/index.html';
+  </script>
+</head>
+<body>
+  <div class="container">
+    <h1>Bob MCP Forge</h1>
+    <div class="spinner"></div>
+    <p>Redirecting to the application...</p>
+    <p><a href="frontend/index.html">Click here if you are not redirected automatically</a></p>
+  </div>
+</body>
+</html>
