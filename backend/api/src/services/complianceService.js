@@ -124,6 +124,12 @@ function spawnNpxTsx(args, options) {
  */
 function runWrapper(input) {
   return new Promise((resolve, reject) => {
+    console.log('🔧 Spawning generator with env:', {
+      BOB_ENABLED: process.env.BOB_ENABLED,
+      HAS_IBM_CLOUD_API_KEY: !!process.env.IBM_CLOUD_API_KEY,
+      HAS_WATSONX_PROJECT_ID: !!process.env.WATSONX_PROJECT_ID,
+    });
+    
     const cmd = spawnNpxTsx(['tsx', COMPLIANCE_WRAPPER], {
       cwd: REPO_ROOT,
       env: { ...process.env }
