@@ -2,8 +2,7 @@ services:
   # Backend API Service
   - type: web
     name: bob-mcp-forge-api
-    env: node
-    region: oregon
+    runtime: node
     plan: free
     rootDir: backend/api
     buildCommand: npm install
@@ -20,5 +19,6 @@ services:
       - key: IBM_CLOUD_API_KEY
         sync: false
     healthCheckPath: /health
+    autoDeploy: true
 
 # Made with Bob
