@@ -1,6 +1,6 @@
 # Sovereign Compliance Agent (MCP Server)
 
-Owner: **Anthony**.
+Owner: **Alex and Sadia**
 
 This is our differentiator. Built **as an MCP server** so it can be reused by any Bob user, not just our generator.
 
