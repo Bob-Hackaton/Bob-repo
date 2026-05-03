@@ -389,7 +389,7 @@ Run `npm install` to ensure all dependencies are installed.
 
 - **Dilshad** (Backend/DevOps) - API orchestrator, deployment
 - **Alejandro** (MCP/Agentic) - Generator service
-- **Anthony** (Architecture) - Policy engine MCP
+- **Ale & Sadia** (Architecture) - Policy engine MCP
 - **Tien** (Frontend) - React UI
 - **Sadia** (Design/Docs) - UI/UX, documentation
 
