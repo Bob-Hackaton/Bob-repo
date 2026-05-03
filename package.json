@@ -1,0 +1,16 @@
+{
+  "name": "bob-mcp-forge",
+  "version": "1.0.0",
+  "description": "Bob MCP Forge - AI-powered MCP server generator",
+  "scripts": {
+    "start": "cd backend/api && npm start",
+    "install": "cd backend/api && npm install"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/Bob-Hackaton/Bob-repo.git"
+  },
+  "keywords": ["mcp", "ai", "code-generation"],
+  "author": "Bob MCP Forge Team",
+  "license": "MIT"
+}

@@ -4,8 +4,7 @@ services:
     name: bob-mcp-forge-api
     runtime: node
     plan: free
-    rootDir: backend/api
-    buildCommand: npm install
+    buildCommand: npm run install
     startCommand: npm start
     envVars:
       - key: NODE_ENV
