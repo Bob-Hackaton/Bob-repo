@@ -17,7 +17,7 @@ export class MockBobClient implements IBobClient {
 }
 
 export class RealBobClient implements IBobClient {
-  async generate(prompt: BobPrompt): Promise<BobResponse> {
+  async generate(_prompt: BobPrompt): Promise<BobResponse> {
     throw new Error('Not implemented');
   }
 }

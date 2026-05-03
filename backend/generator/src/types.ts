@@ -47,7 +47,6 @@ export interface McpServerSchema {
 export interface TemplateContext {
   toolName: string;
   projectName: string;
-  serverName?: string;
   description: string;
   complexity: 'low' | 'medium' | 'high';
   envVars: string[];

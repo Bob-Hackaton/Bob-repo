@@ -6,12 +6,12 @@ Welcome to the **Bob MCP Forge** agent ecosystem. This document tracks all avail
 
 ---
 
-### Auto-invoke Skills
+### ⚡ Auto-invoke Skills
 
-When performing these actions, ALWAYS invoke the corresponding skill FIRST:
+When performing these actions, ALWAYS invoke the corresponding skill FIRST. These are handled automatically by the **Skill Sync** protocol.
 
 | Action | Skill |
-|--------|-------|
+| :--- | :--- |
 | After creating/modifying a skill | `skill-sync` |
 | Auditing generated code for GDPR, SOC2, or HIPAA compliance | `security-compliance-audit` |
 | Creating a new MCP server project or scaffold | `typescript-mcp-server-generator` |

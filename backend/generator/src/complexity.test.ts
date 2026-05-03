@@ -18,9 +18,9 @@ describe('estimateComplexity', () => {
   });
 
   it('returns medium for search/API tools', () => {
-    expect(estimateComplexity('Search for customer records')).toBe('medium');
-    expect(estimateComplexity('Query external service')).toBe('medium');
-    expect(estimateComplexity('Send email notification')).toBe('medium');
+    expect(estimateComplexity('Search customer database')).toBe('medium');
+    expect(estimateComplexity('Query external API')).toBe('medium');
+    expect(estimateComplexity('Email notification tool')).toBe('medium');
   });
 
   it('returns high for database/auth tools', () => {

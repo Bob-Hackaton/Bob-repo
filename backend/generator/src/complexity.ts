@@ -3,9 +3,15 @@
  * Analyzes tool descriptions to estimate implementation complexity.
  */
 
-import type { GenerateMcpServerInput } from './types.js';
-
 export type ComplexityLevel = 'low' | 'medium' | 'high';
+
+/**
+ * Complexity indicators by level
+ */
+interface ComplexityIndicators {
+  keywords: string[];
+  riskTags: string[];
+}
 
 /**
  * Keywords that indicate higher complexity
@@ -26,10 +32,27 @@ const MEDIUM_COMPLEXITY_KEYWORDS = [
   'transform', 'convert', 'process', 'analyze',
 ];
 
+const HIGH_COMPLEXITY_RISK_TAGS = [
+  'authentication',
+  'data-deletion',
+  'pii-access',
+  'payment-processing',
+  'admin-privileges',
+  'data-export',
+];
+
+const MEDIUM_COMPLEXITY_RISK_TAGS = [
+  'external-api',
+  'file-access',
+  'email-sending',
+  'notification',
+  'search-capability',
+];
+
 /**
  * Check if description indicates high complexity
  */
-function isHighComplexity(description: string, _context?: GenerateMcpServerInput['context']): boolean {
+function isHighComplexity(description: string, context?: GenerateMcpServerInput['context']): boolean {
   const lowerDesc = description.toLowerCase();
   return HIGH_COMPLEXITY_KEYWORDS.some(keyword => lowerDesc.includes(keyword));
 }
