@@ -87,7 +87,6 @@ Mapped to the **4 judging criteria** (5 points each, 20 total):
 
 | Member | Role | Primary Responsibility |
 |--------|------|------------------------|
-| **Anthony** | Architecture lead | System design, compliance engine logic, integration glue, demo script |
 | **Alejandro** | MCP / Agentic lead | MCP server generator, agentic flows (has built MCP servers before!) |
 | **Dilshad** | Backend / DevOps | Backend API, database, IBM Cloud deployment pipeline |
 | **Tien** | Frontend | React UI for input, report view, deploy flow |
@@ -189,7 +188,7 @@ bob-mcp-forge/
 ├── frontend/                # React app (Tien)
 ├── backend/
 │   ├── generator/           # MCP server generator (Alejandro)
-│   ├── policy-engine/       # Compliance MCP server (Anthony)
+│   ├── policy-engine/       # Compliance MCP server
 │   └── api/                 # Orchestrator API (Dilshad)
 └── .github/                 # CI, issue templates
 ```
