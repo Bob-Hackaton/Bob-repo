@@ -3,148 +3,415 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bob MCP Forge - Deployment</title>
+  <title>Bob MCP Forge - Deploy to Cloud</title>
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/design-system.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    /* Checklist Styles */
     .checklist-item {
       display: flex;
-      align-items: flex-start;
-      gap: var(--space-2);
-      padding: var(--space-2);
-      border-radius: var(--radius-md);
-      transition: background var(--transition-fast);
+      align-items: center;
+      gap: 16px;
+      animation: slideInFromLeft 300ms ease-out;
+      animation-fill-mode: both;
     }
     
-    .checklist-item:hover {
-      background: var(--color-bg-secondary);
+    @keyframes slideInFromLeft {
+      from {
+        opacity: 0;
+        transform: translateX(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateX(0);
+      }
     }
     
-    .checklist-icon {
-      width: 24px;
-      height: 24px;
+    .checklist-icon-wrapper {
+      width: 40px;
+      height: 40px;
+      background: #d1fae5;
+      border: 2px solid #10b981;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       flex-shrink: 0;
-      margin-top: 2px;
-    }
-    
-    .checklist-icon.complete {
-      background: var(--color-success);
-      color: white;
-    }
-    
-    .checklist-icon.pending {
-      background: var(--color-bg-secondary);
-      border: 2px solid var(--color-border);
     }
     
     .checklist-content {
+      display: flex;
+      align-items: center;
+      gap: 12px;
       flex: 1;
     }
     
-    .checklist-title {
-      font-weight: 600;
-      font-size: var(--font-size-base);
-      margin-bottom: 4px;
+    .checklist-label {
+      font-weight: 500;
     }
     
-    .checklist-description {
+    .checklist-verified {
       font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: #10b981;
+    }
+    
+    /* Deploy Button Gradient */
+    .btn-deploy {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+      transition: all 300ms ease;
+    }
+    
+    .btn-deploy:hover:not(:disabled) {
+      box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    /* Deploying State */
+    .deploying-container {
+      text-align: center;
+    }
+    
+    .deploying-icon {
+      width: 80px;
+      height: 80px;
+      background: #dbeafe;
+      border-radius: 16px;
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 24px;
+      animation: pulse 2s ease-in-out infinite;
+    }
+    
+    @keyframes pulse {
+      0%, 100% {
+        opacity: 1;
+      }
+      50% {
+        opacity: 0.7;
+      }
+    }
+    
+    /* Progress Bar */
+    .progress-container {
+      max-width: 500px;
+      margin: 0 auto 24px;
+    }
+    
+    .progress-bar-wrapper {
+      height: 12px;
+      background: var(--color-bg-secondary);
+      border-radius: 9999px;
+      overflow: hidden;
+      box-shadow: inset 0 2px 4px rgba(0, 0, 0, 0.1);
+    }
+    
+    .progress-bar-fill {
+      height: 100%;
+      background: linear-gradient(90deg, #3b82f6, #2563eb, #1d4ed8);
+      background-size: 200% 100%;
+      transition: width 700ms ease-out;
+      position: relative;
+      overflow: hidden;
+    }
+    
+    .progress-bar-fill::after {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      bottom: 0;
+      background: linear-gradient(90deg, transparent, rgba(255, 255, 255, 0.3), transparent);
+      animation: shimmer 2s infinite;
+    }
+    
+    @keyframes shimmer {
+      0% {
+        transform: translateX(-100%);
+      }
+      100% {
+        transform: translateX(100%);
+      }
+    }
+    
+    /* Deploy Steps */
+    .deploy-step {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 12px;
+      border-radius: var(--radius-lg);
+      margin-bottom: 12px;
+      transition: all 300ms ease;
+    }
+    
+    .deploy-step.active {
+      background: #dbeafe;
+      border: 1px solid #3b82f6;
+    }
+    
+    .deploy-step.complete {
+      background: #d1fae5;
+    }
+    
+    .deploy-step.pending {
+      background: rgba(0, 0, 0, 0.02);
+    }
+    
+    .deploy-step-label {
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+    }
+    
+    .deploy-step.active .deploy-step-label {
+      color: var(--color-text-primary);
+    }
+    
+    .deploy-step.pending .deploy-step-label {
       color: var(--color-text-secondary);
     }
     
-    .deployment-status {
-      text-align: center;
-      padding: var(--space-6);
+    /* Success Banner */
+    .success-banner {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 50%, #d1fae5 100%);
+      border: 2px solid #10b981;
+      border-radius: 16px;
+      padding: 32px;
+      box-shadow: 0 20px 40px rgba(16, 185, 129, 0.2);
+      animation: zoomIn 500ms ease-out;
     }
     
-    .status-icon {
-      width: 80px;
-      height: 80px;
-      margin: 0 auto var(--space-3);
+    @keyframes zoomIn {
+      from {
+        opacity: 0;
+        transform: scale(0.9);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    .success-icon-wrapper {
+      width: 96px;
+      height: 96px;
+      background: #10b981;
       border-radius: 50%;
-      display: flex;
+      display: inline-flex;
       align-items: center;
       justify-content: center;
+      margin-bottom: 16px;
+      box-shadow: 0 10px 30px rgba(16, 185, 129, 0.4);
+      animation: zoomIn 500ms ease-out;
     }
     
-    .status-icon.deploying {
-      background: var(--color-info-light);
-      color: var(--color-info);
+    .success-title {
+      font-size: 32px;
+      font-weight: 700;
+      color: #065f46;
+      margin-bottom: 8px;
     }
     
-    .status-icon.success {
-      background: var(--color-success-light);
-      color: var(--color-success);
+    .success-description {
+      font-size: var(--font-size-lg);
+      color: #047857;
     }
     
-    .status-icon.error {
-      background: var(--color-error-light);
-      color: var(--color-error);
+    /* URL Card */
+    .url-card {
+      background: white;
+      border: 2px solid #10b981;
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      box-shadow: var(--shadow-lg);
     }
     
-    @keyframes rotate {
-      to { transform: rotate(360deg); }
+    .url-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
     }
     
-    .rotating {
-      animation: rotate 2s linear infinite;
+    .url-label-group {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .live-indicator {
+      width: 12px;
+      height: 12px;
+      background: #10b981;
+      border-radius: 50%;
+      animation: pulse 2s ease-in-out infinite;
+      box-shadow: 0 0 10px rgba(16, 185, 129, 0.5);
+    }
+    
+    .url-label {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+    }
+    
+    .active-badge {
+      padding: 4px 12px;
+      background: #d1fae5;
+      color: #065f46;
+      border-radius: 9999px;
+      font-size: var(--font-size-xs);
+      font-weight: 700;
+      border: 1px solid #10b981;
     }
     
     .url-display {
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-      padding: var(--space-3);
-      background: var(--color-bg-secondary);
+      background: rgba(0, 0, 0, 0.02);
+      padding: 12px 16px;
       border-radius: var(--radius-lg);
-      font-family: var(--font-mono);
-      font-size: var(--font-size-base);
+      border: 1px solid var(--color-border);
+      margin-bottom: 12px;
     }
     
     .url-text {
-      flex: 1;
-      color: var(--color-primary);
+      font-family: var(--font-mono);
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: #3b82f6;
       word-break: break-all;
     }
     
-    .deployment-log {
-      background: #1e1e1e;
-      color: #d4d4d4;
-      font-family: var(--font-mono);
-      font-size: var(--font-size-sm);
-      padding: var(--space-3);
-      border-radius: var(--radius-lg);
-      max-height: 300px;
-      overflow-y: auto;
-      line-height: 1.6;
+    /* Info Cards */
+    .info-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 16px;
+      margin-bottom: 24px;
     }
     
-    .log-line {
+    .info-card {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      transition: all 300ms ease;
+    }
+    
+    .info-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    .info-label {
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--color-text-secondary);
       margin-bottom: 4px;
     }
     
-    .log-timestamp {
-      color: #858585;
-      margin-right: var(--space-2);
+    .info-value {
+      font-size: var(--font-size-lg);
+      font-weight: 700;
     }
     
-    .log-success {
-      color: #4ec9b0;
+    .info-value.status {
+      color: #10b981;
+      display: flex;
+      align-items: center;
+      gap: 8px;
     }
     
-    .log-info {
-      color: #4589ff;
+    /* Next Steps Cards */
+    .next-steps-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 24px;
     }
     
-    .log-warning {
-      color: #f1c21b;
+    .next-step-card {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      transition: all 300ms ease;
+    }
+    
+    .next-step-card:hover {
+      box-shadow: var(--shadow-md);
+    }
+    
+    .next-step-header {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      margin-bottom: 16px;
+    }
+    
+    .next-step-title {
+      font-weight: 600;
+    }
+    
+    .next-step-list {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    
+    .next-step-item {
+      display: flex;
+      align-items: start;
+      gap: 8px;
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      margin-bottom: 8px;
+    }
+    
+    .next-step-item:last-child {
+      margin-bottom: 0;
+    }
+    
+    .next-step-link {
+      color: #3b82f6;
+      text-decoration: none;
+      font-weight: 500;
+      transition: color 200ms ease;
+    }
+    
+    .next-step-link:hover {
+      color: #2563eb;
+      text-decoration: underline;
+    }
+    
+    /* Spinner */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .spinner {
+      width: 20px;
+      height: 20px;
+      border: 2px solid #3b82f6;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .info-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .next-steps-grid {
+        grid-template-columns: 1fr;
+      }
     }
   </style>
 </head>
@@ -170,258 +437,249 @@
 
     <!-- Main Content -->
     <main class="app-main">
-      <div class="screen screen-centered">
-        <div style="max-width: 800px; width: 100%;">
+      <div class="screen screen-full">
+        <div class="container" style="max-width: 900px; padding: 48px 32px;">
           
-          <!-- Pre-deployment State -->
-          <div id="pre-deployment">
-            
-            <!-- Page Header -->
-            <div style="text-align: center; margin-bottom: var(--space-6);">
-              <h1 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">
-                Deploy to IBM Cloud
-              </h1>
-              <p style="font-size: var(--font-size-base); color: var(--color-text-secondary);">
-                Your MCP server is ready to deploy. Review the checklist below.
-              </p>
-            </div>
+          <!-- Page Header -->
+          <div style="margin-bottom: 32px;">
+            <h1 style="font-size: 36px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em;">
+              Deploy to Cloud
+            </h1>
+            <p style="font-size: var(--font-size-base); color: var(--color-text-secondary);">
+              Your MCP server is ready for deployment
+            </p>
+          </div>
 
-            <!-- Readiness Checklist -->
-            <div class="card" style="padding: var(--space-4); margin-bottom: var(--space-4);">
-              <h3 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-3);">
-                Deployment Readiness
-              </h3>
-              
-              <div style="display: flex; flex-direction: column; gap: var(--space-1);">
+          <!-- Ready State -->
+          <div id="ready-state">
+            <div class="card" style="padding: 32px; margin-bottom: 24px; box-shadow: var(--shadow-sm);">
+              <h2 style="font-size: var(--font-size-xl); font-weight: 600; margin-bottom: 24px; display: flex; align-items: center; gap: 8px;">
+                <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                Pre-Deployment Checklist
+              </h2>
+              <div style="display: flex; flex-direction: column; gap: 16px;">
+                <div class="checklist-item" style="animation-delay: 0ms;">
+                  <div class="checklist-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                  </div>
+                  <div class="checklist-content">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--color-text-secondary);">
+                      <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="checklist-label">Code generated</span>
+                  </div>
+                  <span class="checklist-verified">✓ Verified</span>
+                </div>
                 
-                <div class="checklist-item">
-                  <div class="checklist-icon complete">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2 7L5 10L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <div class="checklist-item" style="animation-delay: 100ms;">
+                  <div class="checklist-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </div>
                   <div class="checklist-content">
-                    <div class="checklist-title">Code Generated</div>
-                    <div class="checklist-description">MCP server code successfully generated</div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--color-text-secondary);">
+                      <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+                      <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                    </svg>
+                    <span class="checklist-label">Compliance passed</span>
                   </div>
+                  <span class="checklist-verified">✓ Verified</span>
                 </div>
-
-                <div class="checklist-item">
-                  <div class="checklist-icon complete">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2 7L5 10L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                
+                <div class="checklist-item" style="animation-delay: 200ms;">
+                  <div class="checklist-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </div>
                   <div class="checklist-content">
-                    <div class="checklist-title">Dependencies Validated</div>
-                    <div class="checklist-description">All required packages are available</div>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--color-text-secondary);">
+                      <path d="M12 2L2 7L12 12L22 7L12 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M2 17L12 22L22 17M2 12L12 17L22 12" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    <span class="checklist-label">Dependencies resolved</span>
                   </div>
+                  <span class="checklist-verified">✓ Verified</span>
                 </div>
-
-                <div class="checklist-item">
-                  <div class="checklist-icon complete">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2 7L5 10L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                
+                <div class="checklist-item" style="animation-delay: 300ms;">
+                  <div class="checklist-icon-wrapper">
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
                   </div>
                   <div class="checklist-content">
-                    <div class="checklist-title">Dockerfile Created</div>
-                    <div class="checklist-description">Container configuration ready</div>
-                  </div>
-                </div>
-
-                <div class="checklist-item">
-                  <div class="checklist-icon complete">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2 7L5 10L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--color-text-secondary);">
+                      <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
+                    <span class="checklist-label">Ready for deployment</span>
                   </div>
-                  <div class="checklist-content">
-                    <div class="checklist-title">Environment Variables Set</div>
-                    <div class="checklist-description">Required configuration values provided</div>
-                  </div>
+                  <span class="checklist-verified">✓ Verified</span>
                 </div>
-
-                <div class="checklist-item">
-                  <div class="checklist-icon complete">
-                    <svg width="14" height="14" viewBox="0 0 14 14" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M2 7L5 10L12 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                  </div>
-                  <div class="checklist-content">
-                    <div class="checklist-title">Compliance Checks Passed</div>
-                    <div class="checklist-description">No critical issues detected</div>
-                  </div>
-                </div>
-
               </div>
             </div>
 
-            <!-- Deployment Options -->
-            <div class="card" style="padding: var(--space-4); margin-bottom: var(--space-4);">
-              <h3 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-3);">
-                Deployment Configuration
-              </h3>
-              
-              <div style="display: flex; flex-direction: column; gap: var(--space-3);">
-                
-                <div>
-                  <label style="display: block; font-weight: 500; margin-bottom: var(--space-1); font-size: var(--font-size-sm);">
-                    Region
-                  </label>
-                  <select class="input select">
-                    <option>us-south (Dallas)</option>
-                    <option>us-east (Washington DC)</option>
-                    <option>eu-gb (London)</option>
-                    <option>eu-de (Frankfurt)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style="display: block; font-weight: 500; margin-bottom: var(--space-1); font-size: var(--font-size-sm);">
-                    Instance Size
-                  </label>
-                  <select class="input select">
-                    <option>Small (1 vCPU, 2GB RAM)</option>
-                    <option selected>Medium (2 vCPU, 4GB RAM)</option>
-                    <option>Large (4 vCPU, 8GB RAM)</option>
-                  </select>
-                </div>
-
-                <div>
-                  <label style="display: block; font-weight: 500; margin-bottom: var(--space-1); font-size: var(--font-size-sm);">
-                    Server Name
-                  </label>
-                  <input type="text" class="input" value="weather-mcp-server" placeholder="my-mcp-server">
-                </div>
-
-              </div>
-            </div>
-
-            <!-- Deploy Button -->
-            <button class="btn btn-primary btn-lg w-full" id="deploy-btn" onclick="startDeployment()">
-              <svg width="20" height="20" viewBox="0 0 20 20" fill="none" xmlns="http://www.w3.org/2000/svg">
-                <path d="M3 10H17M17 10L12 5M17 10L12 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <button class="btn btn-deploy w-full" style="font-size: var(--font-size-lg); padding: 24px; margin-bottom: 16px;" onclick="handleDeploy()">
+              <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M18 10H6C4.89543 10 4 10.8954 4 12V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V12C20 10.8954 19.1046 10 18 10Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                <path d="M8 10V6C8 4.93913 8.42143 3.92172 9.17157 3.17157C9.92172 2.42143 10.9391 2 12 2C13.0609 2 14.0783 2.42143 14.8284 3.17157C15.5786 3.92172 16 4.93913 16 6V10" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
               </svg>
               Deploy to IBM Cloud
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="margin-left: 8px;">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
             </button>
 
-            <div style="margin-top: var(--space-2); text-align: center; font-size: var(--font-size-sm); color: var(--color-text-secondary);">
-              Deployment typically takes 2-3 minutes
-            </div>
-
+            <p style="text-align: center; font-size: var(--font-size-sm); color: var(--color-text-secondary);">
+              Deployment typically takes 30-60 seconds
+            </p>
           </div>
 
           <!-- Deploying State -->
-          <div id="deploying-state" class="hidden">
-            <div class="card" style="padding: var(--space-6);">
-              
-              <div class="deployment-status">
-                <div class="status-icon deploying">
-                  <svg class="rotating" width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M20 4V12M20 28V36M36 20H28M12 20H4M31.3137 8.68629L25.6569 14.3431M14.3431 25.6569L8.68629 31.3137M31.3137 31.3137L25.6569 25.6569M14.3431 14.3431L8.68629 8.68629" stroke="currentColor" stroke-width="3" stroke-linecap="round"/>
+          <div id="deploying-state" style="display: none;">
+            <div class="card" style="padding: 32px; box-shadow: var(--shadow-lg);">
+              <div class="deploying-container">
+                <div class="deploying-icon">
+                  <svg width="40" height="40" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M18 10H6C4.89543 10 4 10.8954 4 12V20C4 21.1046 4.89543 22 6 22H18C19.1046 22 20 21.1046 20 20V12C20 10.8954 19.1046 10 18 10Z" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M8 10V6C8 4.93913 8.42143 3.92172 9.17157 3.17157C9.92172 2.42143 10.9391 2 12 2C13.0609 2 14.0783 2.42143 14.8284 3.17157C15.5786 3.92172 16 4.93913 16 6V10" stroke="#3b82f6" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
-                <h2 style="font-size: var(--font-size-2xl); font-weight: 700; margin-bottom: var(--space-2);">
-                  Deploying to IBM Cloud
-                </h2>
-                <p style="font-size: var(--font-size-base); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
-                  Building container and provisioning resources...
+                <h3 style="font-size: 28px; font-weight: 600; margin-bottom: 8px;">Deploying to Cloud...</h3>
+                <p style="font-size: var(--font-size-base); color: var(--color-text-secondary); margin-bottom: 32px;">
+                  Building and deploying your MCP server to IBM Cloud
                 </p>
-                <div class="progress-bar" style="max-width: 400px; margin: 0 auto;">
-                  <div class="progress-bar-fill" id="deploy-progress" style="width: 0%;"></div>
-                </div>
-              </div>
 
-              <!-- Deployment Log -->
-              <div style="margin-top: var(--space-4);">
-                <h3 style="font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.5px;">
-                  Deployment Log
-                </h3>
-                <div class="deployment-log" id="deployment-log">
-                  <div class="log-line">
-                    <span class="log-timestamp">[15:42:01]</span>
-                    <span class="log-info">Starting deployment process...</span>
+                <div class="progress-container">
+                  <div class="progress-bar-wrapper">
+                    <div class="progress-bar-fill" id="progress-bar" style="width: 0%;"></div>
                   </div>
                 </div>
-              </div>
 
+                <div id="deploy-steps" style="max-width: 500px; margin: 0 auto;">
+                  <!-- Steps will be rendered here -->
+                </div>
+              </div>
             </div>
           </div>
 
           <!-- Success State -->
-          <div id="success-state" class="hidden">
-            <div class="card" style="padding: var(--space-6);">
-              
-              <div class="deployment-status">
-                <div class="status-icon success">
-                  <svg width="40" height="40" viewBox="0 0 40 40" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M8 20L16 28L32 12" stroke="currentColor" stroke-width="3" stroke-linecap="round" stroke-linejoin="round"/>
+          <div id="success-state" style="display: none;">
+            <div class="success-banner" style="margin-bottom: 24px;">
+              <div style="text-align: center; margin-bottom: 24px;">
+                <div class="success-icon-wrapper">
+                  <svg width="56" height="56" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
                 </div>
-                <h2 style="font-size: var(--font-size-2xl); font-weight: 700; margin-bottom: var(--space-2);">
-                  Deployment Successful!
-                </h2>
-                <p style="font-size: var(--font-size-base); color: var(--color-text-secondary); margin-bottom: var(--space-4);">
-                  Your MCP server is now live and ready to use
-                </p>
+                <h3 class="success-title">✓ Deployment Successful!</h3>
+                <p class="success-description">Your MCP server is now live and ready to use</p>
               </div>
 
-              <!-- Live URL -->
-              <div style="margin-bottom: var(--space-4);">
-                <label style="display: block; font-weight: 600; margin-bottom: var(--space-2); font-size: var(--font-size-sm);">
-                  Live URL
-                </label>
+              <div class="url-card">
+                <div class="url-header">
+                  <div class="url-label-group">
+                    <div class="live-indicator"></div>
+                    <span class="url-label">Live URL</span>
+                  </div>
+                  <span class="active-badge">● ACTIVE</span>
+                </div>
+
                 <div class="url-display">
-                  <span class="url-text" id="live-url">https://weather-mcp-server.us-south.cf.appdomain.cloud</span>
-                  <button class="btn btn-secondary" onclick="copyUrl()">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M5 5V3C5 2.44772 5.44772 2 6 2H13C13.5523 2 14 2.44772 14 3V10C14 10.5523 13.5523 11 13 11H11M3 5H10C10.5523 5 11 5.44772 11 6V13C11 13.5523 10.5523 14 10 14H3C2.44772 14 2 13.5523 2 13V6C2 5.44772 2.44772 5 3 5Z" stroke="currentColor" stroke-width="1.5"/>
+                  <div class="url-text" id="deploy-url">https://weather-mcp-prod.ibm.cloud.com</div>
+                </div>
+
+                <div style="display: flex; gap: 12px;">
+                  <button class="btn btn-secondary" style="flex: 1; box-shadow: var(--shadow-md);" onclick="copyUrl()">
+                    <svg id="copy-icon" width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M8 4V16C8 16.5304 8.21071 17.0391 8.58579 17.4142C8.96086 17.7893 9.46957 18 10 18H18C18.5304 18 19.0391 17.7893 19.4142 17.4142C19.7893 17.0391 20 16.5304 20 16V7.242C20 6.97556 19.9467 6.71181 19.8433 6.46624C19.7399 6.22068 19.5885 5.99824 19.398 5.812L16.083 2.57C15.7094 2.20466 15.2076 2.00007 14.685 2H10C9.46957 2 8.96086 2.21071 8.58579 2.58579C8.21071 2.96086 8 3.46957 8 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M16 18V20C16 20.5304 15.7893 21.0391 15.4142 21.4142C15.0391 21.7893 14.5304 22 14 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V9C4 8.46957 4.21071 7.96086 4.58579 7.58579C4.96086 7.21071 5.46957 7 6 7H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                     </svg>
-                    Copy
+                    <span id="copy-text">Copy URL</span>
+                  </button>
+                  <button class="btn btn-primary" style="flex: 1; box-shadow: var(--shadow-md);" onclick="window.open(document.getElementById('deploy-url').textContent, '_blank')">
+                    <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                      <path d="M18 13V19C18 19.5304 17.7893 20.0391 17.4142 20.4142C17.0391 20.7893 16.5304 21 16 21H5C4.46957 21 3.96086 20.7893 3.58579 20.4142C3.21071 20.0391 3 19.5304 3 19V8C3 7.46957 3.21071 6.96086 3.58579 6.58579C3.96086 6.21071 4.46957 6 5 6H11" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M15 3H21V9" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      <path d="M10 14L21 3" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    </svg>
+                    Open in Browser
                   </button>
                 </div>
               </div>
+            </div>
 
-              <!-- Status Info -->
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-3); margin-bottom: var(--space-4);">
-                
-                <div style="text-align: center; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
-                  <div style="display: flex; align-items: center; justify-content: center; gap: var(--space-1); margin-bottom: 4px;">
-                    <span class="status-dot success"></span>
-                    <span style="font-weight: 600; font-size: var(--font-size-sm);">Status</span>
-                  </div>
-                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">Running</div>
+            <div class="info-grid">
+              <div class="info-card">
+                <div class="info-label">Region</div>
+                <div class="info-value">US East</div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Status</div>
+                <div class="info-value status">
+                  <span style="width: 8px; height: 8px; background: #10b981; border-radius: 50%; animation: pulse 2s ease-in-out infinite;"></span>
+                  Running
                 </div>
+              </div>
+              <div class="info-card">
+                <div class="info-label">Deployed At</div>
+                <div class="info-value" id="deploy-time">--:--:--</div>
+              </div>
+            </div>
 
-                <div style="text-align: center; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
-                  <div style="font-weight: 600; font-size: var(--font-size-sm); margin-bottom: 4px;">Region</div>
-                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">us-south</div>
+            <div class="next-steps-grid">
+              <div class="next-step-card">
+                <div class="next-step-header">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: #3b82f6;">
+                    <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="currentColor" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <h3 class="next-step-title">Next Steps</h3>
                 </div>
-
-                <div style="text-align: center; padding: var(--space-2); background: var(--color-bg-secondary); border-radius: var(--radius-md);">
-                  <div style="font-weight: 600; font-size: var(--font-size-sm); margin-bottom: 4px;">Instance</div>
-                  <div style="font-size: var(--font-size-xs); color: var(--color-text-secondary);">Medium</div>
-                </div>
-
+                <ul class="next-step-list">
+                  <li class="next-step-item">
+                    <span style="color: #3b82f6;">→</span>
+                    <span>Configure your MCP client to use the deployed server</span>
+                  </li>
+                  <li class="next-step-item">
+                    <span style="color: #3b82f6;">→</span>
+                    <span>Monitor logs and metrics in IBM Cloud dashboard</span>
+                  </li>
+                  <li class="next-step-item">
+                    <span style="color: #3b82f6;">→</span>
+                    <span>Set up custom domain (optional)</span>
+                  </li>
+                </ul>
               </div>
 
-              <!-- Actions -->
-              <div style="display: flex; gap: var(--space-2);">
-                <button class="btn btn-secondary flex-1" onclick="window.location.href='../index.html'">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2 8L8 2M8 2L14 8M8 2V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+              <div class="next-step-card">
+                <div class="next-step-header">
+                  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: #3b82f6;">
+                    <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
                   </svg>
-                  Back to Home
-                </button>
-                <button class="btn btn-primary flex-1" onclick="window.location.href='landing.html'">
-                  <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                    <path d="M2 8L8 2M8 2L14 8M8 2V14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                  </svg>
-                  Create New Server
-                </button>
+                  <h3 class="next-step-title">Resources</h3>
+                </div>
+                <ul class="next-step-list">
+                  <li class="next-step-item">
+                    <span style="color: #3b82f6;">→</span>
+                    <a href="#" class="next-step-link">View deployment logs</a>
+                  </li>
+                  <li class="next-step-item">
+                    <span style="color: #3b82f6;">→</span>
+                    <a href="#" class="next-step-link">API documentation</a>
+                  </li>
+                  <li class="next-step-item">
+                    <span style="color: #3b82f6;">→</span>
+                    <a href="#" class="next-step-link">Monitor performance metrics</a>
+                  </li>
+                </ul>
               </div>
-
             </div>
           </div>
 
@@ -431,76 +689,104 @@
   </div>
 
   <script>
-    function startDeployment() {
-      // Hide pre-deployment, show deploying
-      document.getElementById('pre-deployment').classList.add('hidden');
-      document.getElementById('deploying-state').classList.remove('hidden');
+    const deploySteps = [
+      { label: "Building container image", duration: 1200 },
+      { label: "Pushing to registry", duration: 1000 },
+      { label: "Configuring cloud resources", duration: 800 },
+      { label: "Starting service", duration: 1000 },
+    ];
+
+    let currentStep = -1;
+
+    function handleDeploy() {
+      // Hide ready state, show deploying state
+      document.getElementById('ready-state').style.display = 'none';
+      document.getElementById('deploying-state').style.display = 'block';
       
-      // Simulate deployment progress
-      let progress = 0;
-      const progressBar = document.getElementById('deploy-progress');
-      const log = document.getElementById('deployment-log');
+      // Render deploy steps
+      renderDeploySteps();
       
-      const logs = [
-        { time: '15:42:02', text: 'Building Docker image...', type: 'info' },
-        { time: '15:42:15', text: 'Image built successfully', type: 'success' },
-        { time: '15:42:16', text: 'Pushing to IBM Cloud Registry...', type: 'info' },
-        { time: '15:42:28', text: 'Image pushed successfully', type: 'success' },
-        { time: '15:42:29', text: 'Creating Cloud Foundry app...', type: 'info' },
-        { time: '15:42:35', text: 'App created successfully', type: 'success' },
-        { time: '15:42:36', text: 'Deploying application...', type: 'info' },
-        { time: '15:42:50', text: 'Application deployed successfully', type: 'success' },
-        { time: '15:42:51', text: 'Starting health checks...', type: 'info' },
-        { time: '15:42:58', text: 'Health checks passed', type: 'success' },
-        { time: '15:42:59', text: 'Deployment complete!', type: 'success' }
-      ];
-      
-      let logIndex = 0;
-      
-      const interval = setInterval(() => {
-        progress += 10;
-        progressBar.style.width = progress + '%';
-        
-        if (logIndex < logs.length) {
-          const logEntry = logs[logIndex];
-          const logLine = document.createElement('div');
-          logLine.className = 'log-line';
-          logLine.innerHTML = `
-            <span class="log-timestamp">[${logEntry.time}]</span>
-            <span class="log-${logEntry.type}">${logEntry.text}</span>
-          `;
-          log.appendChild(logLine);
-          log.scrollTop = log.scrollHeight;
-          logIndex++;
-        }
-        
-        if (progress >= 100) {
-          clearInterval(interval);
-          setTimeout(() => {
-            document.getElementById('deploying-state').classList.add('hidden');
-            document.getElementById('success-state').classList.remove('hidden');
-          }, 1000);
-        }
-      }, 800);
+      // Start deployment process
+      startDeployment();
     }
-    
+
+    function renderDeploySteps() {
+      const container = document.getElementById('deploy-steps');
+      container.innerHTML = deploySteps.map((step, index) => `
+        <div class="deploy-step pending" id="step-${index}">
+          <span class="deploy-step-label">${step.label}</span>
+          <div id="step-icon-${index}" style="width: 20px; height: 20px; border: 2px solid var(--color-border); border-radius: 50%;"></div>
+        </div>
+      `).join('');
+    }
+
+    function startDeployment() {
+      let stepIndex = 0;
+      let totalDuration = deploySteps.reduce((sum, step) => sum + step.duration, 0);
+      let elapsed = 0;
+
+      function processStep() {
+        if (stepIndex >= deploySteps.length) {
+          // Deployment complete
+          setTimeout(() => {
+            document.getElementById('deploying-state').style.display = 'none';
+            document.getElementById('success-state').style.display = 'block';
+            document.getElementById('deploy-time').textContent = new Date().toLocaleTimeString();
+          }, 500);
+          return;
+        }
+
+        const step = deploySteps[stepIndex];
+        const stepEl = document.getElementById(`step-${stepIndex}`);
+        const iconEl = document.getElementById(`step-icon-${stepIndex}`);
+        
+        // Mark as active
+        stepEl.classList.remove('pending');
+        stepEl.classList.add('active');
+        iconEl.innerHTML = '<div class="spinner"></div>';
+        
+        // Update progress bar
+        elapsed += step.duration;
+        const progress = (elapsed / totalDuration) * 100;
+        document.getElementById('progress-bar').style.width = progress + '%';
+        
+        // Complete step after duration
+        setTimeout(() => {
+          stepEl.classList.remove('active');
+          stepEl.classList.add('complete');
+          iconEl.innerHTML = `
+            <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+              <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+          `;
+          
+          stepIndex++;
+          processStep();
+        }, step.duration);
+      }
+
+      processStep();
+    }
+
     function copyUrl() {
-      const url = document.getElementById('live-url').textContent;
-      navigator.clipboard.writeText(url);
+      const url = document.getElementById('deploy-url').textContent;
+      const copyIcon = document.getElementById('copy-icon');
+      const copyText = document.getElementById('copy-text');
       
-      // Show feedback
-      const btn = event.target.closest('button');
-      const originalHTML = btn.innerHTML;
-      btn.innerHTML = `
-        <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-          <path d="M3 8L6 11L13 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-        </svg>
-        Copied!
-      `;
-      
-      setTimeout(() => {
-        btn.innerHTML = originalHTML;
-      }, 2000);
+      navigator.clipboard.writeText(url).then(() => {
+        copyIcon.innerHTML = `
+          <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        `;
+        copyText.textContent = 'Copied!';
+        
+        setTimeout(() => {
+          copyIcon.innerHTML = `
+            <path d="M8 4V16C8 16.5304 8.21071 17.0391 8.58579 17.4142C8.96086 17.7893 9.46957 18 10 18H18C18.5304 18 19.0391 17.7893 19.4142 17.4142C19.7893 17.0391 20 16.5304 20 16V7.242C20 6.97556 19.9467 6.71181 19.8433 6.46624C19.7399 6.22068 19.5885 5.99824 19.398 5.812L16.083 2.57C15.7094 2.20466 15.2076 2.00007 14.685 2H10C9.46957 2 8.96086 2.21071 8.58579 2.58579C8.21071 2.96086 8 3.46957 8 4Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+            <path d="M16 18V20C16 20.5304 15.7893 21.0391 15.4142 21.4142C15.0391 21.7893 14.5304 22 14 22H6C5.46957 22 4.96086 21.7893 4.58579 21.4142C4.21071 21.0391 4 20.5304 4 20V9C4 8.46957 4.21071 7.96086 4.58579 7.58579C4.96086 7.21071 5.46957 7 6 7H8" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          `;
+          copyText.textContent = 'Copy URL';
+        }, 2000);
+      });
     }
   </script>
 </body>

@@ -3,158 +3,458 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bob MCP Forge - Compliance Dashboard</title>
+  <title>Bob MCP Forge - Compliance Report</title>
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/design-system.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    /* Summary Cards */
+    .summary-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 24px;
+      margin-bottom: 32px;
+    }
+    
     .summary-card {
-      text-align: center;
-      padding: var(--space-4);
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      transition: all 300ms ease;
     }
     
-    .summary-value {
-      font-size: var(--font-size-4xl);
-      font-weight: 700;
-      margin-bottom: var(--space-1);
-    }
-    
-    .summary-label {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-secondary);
-      text-transform: uppercase;
-      letter-spacing: 0.5px;
-      font-weight: 600;
-    }
-    
-    .issue-card {
-      padding: var(--space-3);
-      border-left: 4px solid;
-      transition: all var(--transition-base);
-    }
-    
-    .issue-card:hover {
+    .summary-card:hover {
       box-shadow: var(--shadow-md);
     }
     
-    .issue-card.critical {
-      border-left-color: var(--color-error);
-      background: var(--color-error-light);
+    .summary-card-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 8px;
     }
     
-    .issue-card.warning {
-      border-left-color: var(--color-warning);
-      background: var(--color-warning-light);
+    .summary-card-label {
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--color-text-secondary);
     }
     
-    .issue-card.info {
-      border-left-color: var(--color-info);
-      background: var(--color-info-light);
+    .summary-card-value {
+      font-size: 32px;
+      font-weight: 700;
+    }
+    
+    .summary-card.score {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      border-color: #2563eb;
+      box-shadow: var(--shadow-lg);
+    }
+    
+    .summary-card.score:hover {
+      box-shadow: var(--shadow-xl);
+    }
+    
+    .summary-card.score .summary-card-label {
+      color: rgba(255, 255, 255, 0.9);
+    }
+    
+    .summary-card.score .summary-card-value {
+      color: white;
+    }
+    
+    /* Ready Banner */
+    .ready-banner {
+      background: linear-gradient(135deg, #d1fae5 0%, #a7f3d0 100%);
+      border: 2px solid #10b981;
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      margin-bottom: 32px;
+      box-shadow: var(--shadow-lg);
+      animation: slideInFromTop 500ms ease-out;
+    }
+    
+    @keyframes slideInFromTop {
+      from {
+        opacity: 0;
+        transform: translateY(-20px);
+      }
+      to {
+        opacity: 1;
+        transform: translateY(0);
+      }
+    }
+    
+    .ready-banner-content {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+    }
+    
+    .ready-icon {
+      width: 48px;
+      height: 48px;
+      background: #10b981;
+      border-radius: 50%;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+    }
+    
+    .ready-text {
+      flex: 1;
+    }
+    
+    .ready-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      color: #065f46;
+      margin-bottom: 4px;
+    }
+    
+    .ready-description {
+      font-size: var(--font-size-sm);
+      color: #047857;
+    }
+    
+    .ready-score {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      padding: 8px 16px;
+      background: rgba(16, 185, 129, 0.2);
+      border-radius: var(--radius-lg);
+    }
+    
+    .ready-score-text {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: #047857;
+    }
+    
+    /* Filter Bar */
+    .filter-section {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 24px;
+    }
+    
+    .filter-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    .filter-btn {
+      padding: 8px 16px;
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      border: 1px solid var(--color-border);
+      background: var(--color-card);
+      color: var(--color-text-secondary);
+      border-radius: var(--radius-lg);
+      cursor: pointer;
+      transition: all 200ms ease;
+    }
+    
+    .filter-btn:hover {
+      color: var(--color-text-primary);
+      border-color: #3b82f6;
+    }
+    
+    .filter-btn.active {
+      background: #3b82f6;
+      color: white;
+      border-color: #3b82f6;
+      box-shadow: var(--shadow-md);
+    }
+    
+    /* Issue Cards */
+    .issue-card {
+      background: var(--color-card);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      margin-bottom: 16px;
+      transition: all 500ms ease;
+      border: 1px solid var(--color-border);
+    }
+    
+    .issue-card:hover {
+      border-color: #3b82f6;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .issue-card.fixed {
+      border: 2px solid #10b981;
+      box-shadow: 0 0 0 4px rgba(16, 185, 129, 0.1);
+    }
+    
+    .issue-card.failed {
+      border: 2px solid #ef4444;
+      box-shadow: 0 0 0 4px rgba(239, 68, 68, 0.1);
     }
     
     .issue-header {
       display: flex;
       align-items: flex-start;
-      gap: var(--space-2);
-      margin-bottom: var(--space-2);
+      gap: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .issue-icon {
+      width: 20px;
+      height: 20px;
+      flex-shrink: 0;
+      margin-top: 2px;
     }
     
     .issue-content {
       flex: 1;
+      min-width: 0;
+    }
+    
+    .issue-title-row {
+      display: flex;
+      align-items: start;
+      justify-content: space-between;
+      gap: 16px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+    }
+    
+    .issue-title-group {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
     }
     
     .issue-title {
+      font-size: var(--font-size-lg);
       font-weight: 600;
-      font-size: var(--font-size-base);
-      margin-bottom: 4px;
+    }
+    
+    .issue-title.resolved {
+      text-decoration: line-through;
+      color: var(--color-text-secondary);
+    }
+    
+    .severity-badge {
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      text-transform: uppercase;
+      border: 1px solid;
+    }
+    
+    .severity-badge.critical {
+      background: #fee2e2;
+      color: #991b1b;
+      border-color: #ef4444;
+    }
+    
+    .severity-badge.warning {
+      background: #fef3c7;
+      color: #92400e;
+      border-color: #f59e0b;
+    }
+    
+    .severity-badge.info {
+      background: #dbeafe;
+      color: #1e40af;
+      border-color: #3b82f6;
+    }
+    
+    .resolved-badge {
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      background: #d1fae5;
+      color: #065f46;
+      border: 2px solid #10b981;
+      animation: zoomIn 300ms ease-out;
+    }
+    
+    @keyframes zoomIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+    
+    .fail-badge {
+      padding: 4px 12px;
+      border-radius: 9999px;
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      background: #fee2e2;
+      color: #991b1b;
+      border: 1px solid #ef4444;
     }
     
     .issue-location {
-      font-family: var(--font-mono);
-      font-size: var(--font-size-xs);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: var(--font-size-sm);
       color: var(--color-text-secondary);
-      margin-bottom: var(--space-2);
+      margin-bottom: 12px;
     }
     
     .issue-description {
-      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      line-height: 1.6;
+      margin-bottom: 16px;
+    }
+    
+    .issue-description.resolved {
       color: var(--color-text-secondary);
-      line-height: var(--line-height-relaxed);
-      margin-bottom: var(--space-2);
     }
     
-    .issue-fix {
-      background: white;
-      padding: var(--space-2);
-      border-radius: var(--radius-md);
-      font-size: var(--font-size-sm);
-      margin-bottom: var(--space-2);
+    /* Fix Progress */
+    .fix-progress {
+      background: #dbeafe;
+      border: 1px solid #3b82f6;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+      animation: slideInFromTop 300ms ease-out;
     }
     
-    .issue-fix-title {
-      font-weight: 600;
-      margin-bottom: 4px;
+    .fix-progress-header {
       display: flex;
       align-items: center;
-      gap: var(--space-1);
+      gap: 12px;
+      margin-bottom: 12px;
     }
     
-    .filter-bar {
-      display: flex;
-      gap: var(--space-2);
-      flex-wrap: wrap;
-      margin-bottom: var(--space-4);
-    }
-    
-    .filter-btn {
-      padding: var(--space-1) var(--space-2);
+    .fix-progress-text {
       font-size: var(--font-size-sm);
       font-weight: 500;
-      border: 1px solid var(--color-border);
-      background: white;
-      border-radius: var(--radius-md);
-      cursor: pointer;
-      transition: all var(--transition-fast);
+      color: #1e40af;
     }
     
-    .filter-btn:hover {
-      border-color: var(--color-border-strong);
+    .fix-progress-steps {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
     }
     
-    .filter-btn.active {
-      background: var(--color-primary);
-      color: white;
-      border-color: var(--color-primary);
-    }
-    
-    .score-circle {
-      width: 120px;
-      height: 120px;
-      border-radius: 50%;
+    .fix-step {
       display: flex;
       align-items: center;
-      justify-content: center;
-      font-size: var(--font-size-3xl);
-      font-weight: 700;
-      margin: 0 auto var(--space-2);
-      position: relative;
+      gap: 8px;
+      font-size: var(--font-size-sm);
     }
     
-    .score-circle.good {
-      background: var(--color-success-light);
-      color: var(--color-success);
+    .fix-step.active {
+      color: var(--color-text-primary);
     }
     
-    .score-circle.warning {
-      background: var(--color-warning-light);
-      color: #8e6a00;
+    .fix-step.inactive {
+      color: var(--color-text-secondary);
     }
     
-    .score-circle.poor {
-      background: var(--color-error-light);
-      color: var(--color-error);
+    /* Suggested Fix */
+    .suggested-fix {
+      background: rgba(0, 0, 0, 0.02);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      margin-bottom: 16px;
+    }
+    
+    .suggested-fix-title {
+      font-size: var(--font-size-xs);
+      font-weight: 600;
+      color: var(--color-text-secondary);
+      text-transform: uppercase;
+      letter-spacing: 0.5px;
+      margin-bottom: 8px;
+    }
+    
+    .suggested-fix-content {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-primary);
+      font-weight: 500;
+    }
+    
+    /* Success Message */
+    .success-message {
+      background: #d1fae5;
+      border: 2px solid #10b981;
+      border-radius: var(--radius-lg);
+      padding: 16px;
+      animation: slideInFromTop 300ms ease-out;
+    }
+    
+    .success-message-content {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      color: #065f46;
+    }
+    
+    /* Spinner */
+    @keyframes spin {
+      to { transform: rotate(360deg); }
+    }
+    
+    .spinner {
+      width: 16px;
+      height: 16px;
+      border: 2px solid #3b82f6;
+      border-top-color: transparent;
+      border-radius: 50%;
+      animation: spin 0.8s linear infinite;
+    }
+    
+    /* Button Loading */
+    .btn.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    
+    /* Deploy Button Success Variant */
+    .btn-success {
+      background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+      color: white;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .btn-success:hover:not(:disabled) {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-1px);
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .summary-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+      
+      .filter-section {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 16px;
+      }
+      
+      .filter-group {
+        flex-wrap: wrap;
+      }
     }
   </style>
 </head>
@@ -175,280 +475,107 @@
           </svg>
           Back to Code
         </button>
-        <button class="btn btn-primary" onclick="window.location.href='deployment.html'">
-          Deploy to Cloud
-          <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-            <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-          </svg>
-        </button>
       </nav>
     </header>
 
     <!-- Main Content -->
     <main class="app-main">
       <div class="screen screen-full">
-        <div class="container" style="max-width: var(--max-width-xl);">
+        <div class="container" style="max-width: 1280px; padding: 48px 32px;">
           
           <!-- Page Header -->
-          <div style="margin-bottom: var(--space-6);">
-            <h1 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">
-              Compliance Dashboard
+          <div style="margin-bottom: 32px;">
+            <h1 style="font-size: 36px; font-weight: 700; margin-bottom: 8px; letter-spacing: -0.02em;">
+              Compliance Report
             </h1>
             <p style="font-size: var(--font-size-base); color: var(--color-text-secondary);">
-              Security, performance, and policy compliance analysis for your MCP server
+              Security and compliance validation results
             </p>
           </div>
 
-          <!-- Summary Cards -->
-          <div style="display: grid; grid-template-columns: repeat(4, 1fr); gap: var(--space-3); margin-bottom: var(--space-6);">
-            
-            <div class="card summary-card">
-              <div class="score-circle warning">
-                72
+          <!-- Ready for Deployment Banner (hidden by default) -->
+          <div id="ready-banner" class="ready-banner" style="display: none;">
+            <div class="ready-banner-content">
+              <div class="ready-icon">
+                <svg width="28" height="28" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="white" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
               </div>
-              <div class="summary-label">Overall Score</div>
+              <div class="ready-text">
+                <div class="ready-title">Ready for Deployment</div>
+                <div class="ready-description">All compliance checks passed. Your MCP server is secure and ready to deploy.</div>
+              </div>
+              <div class="ready-score">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#047857" stroke="#047857" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+                <span class="ready-score-text">Score: <span id="ready-score-value">100</span>/100</span>
+              </div>
             </div>
-
-            <div class="card summary-card" style="border-top: 4px solid var(--color-success);">
-              <div class="summary-value" style="color: var(--color-success);">18</div>
-              <div class="summary-label">Passed</div>
-            </div>
-
-            <div class="card summary-card" style="border-top: 4px solid var(--color-warning);">
-              <div class="summary-value" style="color: #8e6a00;">5</div>
-              <div class="summary-label">Warnings</div>
-            </div>
-
-            <div class="card summary-card" style="border-top: 4px solid var(--color-error);">
-              <div class="summary-value" style="color: var(--color-error);">2</div>
-              <div class="summary-label">Failed</div>
-            </div>
-
           </div>
 
-          <!-- Filter Bar -->
-          <div class="filter-bar">
-            <button class="filter-btn active" data-filter="all">All Issues</button>
-            <button class="filter-btn" data-filter="critical">Critical</button>
-            <button class="filter-btn" data-filter="warning">Warnings</button>
-            <button class="filter-btn" data-filter="info">Info</button>
-            <div style="margin-left: auto; display: flex; gap: var(--space-2);">
-              <button class="filter-btn" data-category="security">Security</button>
-              <button class="filter-btn" data-category="performance">Performance</button>
-              <button class="filter-btn" data-category="compliance">Compliance</button>
+          <!-- Summary Cards -->
+          <div class="summary-grid">
+            <div class="summary-card">
+              <div class="summary-card-header">
+                <span class="summary-card-label">Passed</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="summary-card-value" style="color: #10b981;" id="passed-count">1</div>
             </div>
+
+            <div class="summary-card">
+              <div class="summary-card-header">
+                <span class="summary-card-label">Warnings</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 9V13M12 17H12.01M10.29 3.86L1.82 18C1.64537 18.3024 1.55296 18.6453 1.55199 18.9945C1.55101 19.3437 1.64151 19.6871 1.81445 19.9905C1.98738 20.2939 2.23675 20.5467 2.53773 20.7239C2.83871 20.9011 3.18082 20.9962 3.53 21H20.47C20.8192 20.9962 21.1613 20.9011 21.4623 20.7239C21.7633 20.5467 22.0126 20.2939 22.1856 19.9905C22.3585 19.6871 22.449 19.3437 22.448 18.9945C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15448C12.6817 2.98585 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98585 11.0188 3.15448C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="summary-card-value" style="color: #f59e0b;" id="warning-count">1</div>
+            </div>
+
+            <div class="summary-card">
+              <div class="summary-card-header">
+                <span class="summary-card-label">Failed</span>
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 8V12M12 16H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+              </div>
+              <div class="summary-card-value" style="color: #ef4444;" id="failed-count">1</div>
+            </div>
+
+            <div class="summary-card score">
+              <div class="summary-card-header">
+                <span class="summary-card-label">Overall Score</span>
+              </div>
+              <div class="summary-card-value" id="overall-score">67/100</div>
+            </div>
+          </div>
+
+          <!-- Filters and Deploy Button -->
+          <div class="filter-section">
+            <div class="filter-group">
+              <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg" style="color: var(--color-text-secondary);">
+                <path d="M22 3H2L10 12.46V19L14 21V12.46L22 3Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <button class="filter-btn active" data-filter="all">All</button>
+              <button class="filter-btn" data-filter="critical">Critical</button>
+              <button class="filter-btn" data-filter="warning">Warning</button>
+              <button class="filter-btn" data-filter="info">Info</button>
+            </div>
+            <button class="btn btn-primary" id="deploy-btn" onclick="handleDeploy()" disabled>
+              <span id="deploy-text">Fix Critical Issues First</span>
+              <svg id="deploy-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </button>
           </div>
 
           <!-- Issues List -->
-          <div style="display: flex; flex-direction: column; gap: var(--space-3);">
-            
-            <!-- Critical Issue -->
-            <div class="card issue-card critical">
-              <div class="issue-header">
-                <span class="badge badge-error">CRITICAL</span>
-                <div class="issue-content">
-                  <div class="issue-title">Missing Input Validation</div>
-                  <div class="issue-location">server.ts:45-52</div>
-                  <div class="issue-description">
-                    User input is not validated before processing. This could lead to injection attacks or unexpected behavior. All external inputs should be validated against a schema before use.
-                  </div>
-                  <div class="issue-fix">
-                    <div class="issue-fix-title">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      Suggested Fix
-                    </div>
-                    <div style="color: var(--color-text-secondary);">
-                      Add Zod schema validation for all tool inputs. Example: <code class="code-inline">z.object({ location: z.string().min(1) })</code>
-                    </div>
-                  </div>
-                  <button class="btn btn-primary btn-sm">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Apply Fix
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Critical Issue 2 -->
-            <div class="card issue-card critical">
-              <div class="issue-header">
-                <span class="badge badge-error">CRITICAL</span>
-                <div class="issue-content">
-                  <div class="issue-title">API Key Exposed in Code</div>
-                  <div class="issue-location">server.ts:12</div>
-                  <div class="issue-description">
-                    API key is hardcoded in the source code. This is a security risk as the key could be exposed in version control or logs. Use environment variables for sensitive credentials.
-                  </div>
-                  <div class="issue-fix">
-                    <div class="issue-fix-title">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      Suggested Fix
-                    </div>
-                    <div style="color: var(--color-text-secondary);">
-                      Replace hardcoded key with <code class="code-inline">process.env.API_KEY</code> and add to .env file
-                    </div>
-                  </div>
-                  <button class="btn btn-primary btn-sm">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Apply Fix
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Warning Issue -->
-            <div class="card issue-card warning">
-              <div class="issue-header">
-                <span class="badge badge-warning">WARNING</span>
-                <div class="issue-content">
-                  <div class="issue-title">Missing Error Handling</div>
-                  <div class="issue-location">server.ts:78-85</div>
-                  <div class="issue-description">
-                    API calls are not wrapped in try-catch blocks. Network failures or API errors could crash the server. Add proper error handling with user-friendly error messages.
-                  </div>
-                  <div class="issue-fix">
-                    <div class="issue-fix-title">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      Suggested Fix
-                    </div>
-                    <div style="color: var(--color-text-secondary);">
-                      Wrap API calls in try-catch and return structured error responses
-                    </div>
-                  </div>
-                  <button class="btn btn-primary btn-sm">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Apply Fix
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Warning Issue 2 -->
-            <div class="card issue-card warning">
-              <div class="issue-header">
-                <span class="badge badge-warning">WARNING</span>
-                <div class="issue-content">
-                  <div class="issue-title">No Rate Limiting</div>
-                  <div class="issue-location">server.ts:general</div>
-                  <div class="issue-description">
-                    The server does not implement rate limiting for API calls. This could lead to excessive API usage, increased costs, or service throttling. Consider implementing a rate limiter.
-                  </div>
-                  <div class="issue-fix">
-                    <div class="issue-fix-title">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      Suggested Fix
-                    </div>
-                    <div style="color: var(--color-text-secondary);">
-                      Add rate limiting middleware using <code class="code-inline">bottleneck</code> or similar library
-                    </div>
-                  </div>
-                  <button class="btn btn-primary btn-sm">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Apply Fix
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Info Issue -->
-            <div class="card issue-card info">
-              <div class="issue-header">
-                <span class="badge badge-info">INFO</span>
-                <div class="issue-content">
-                  <div class="issue-title">Missing TypeScript Strict Mode</div>
-                  <div class="issue-location">tsconfig.json</div>
-                  <div class="issue-description">
-                    TypeScript strict mode is not enabled. Enabling strict mode helps catch more potential bugs at compile time and improves code quality.
-                  </div>
-                  <div class="issue-fix">
-                    <div class="issue-fix-title">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      Suggested Fix
-                    </div>
-                    <div style="color: var(--color-text-secondary);">
-                      Add <code class="code-inline">"strict": true</code> to tsconfig.json compilerOptions
-                    </div>
-                  </div>
-                  <button class="btn btn-secondary btn-sm">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Apply Fix
-                  </button>
-                </div>
-              </div>
-            </div>
-
-            <!-- Info Issue 2 -->
-            <div class="card issue-card info">
-              <div class="issue-header">
-                <span class="badge badge-info">INFO</span>
-                <div class="issue-content">
-                  <div class="issue-title">Consider Adding Logging</div>
-                  <div class="issue-location">server.ts:general</div>
-                  <div class="issue-description">
-                    No structured logging is implemented. Adding logging helps with debugging and monitoring in production environments. Consider using a logging library like Winston or Pino.
-                  </div>
-                  <div class="issue-fix">
-                    <div class="issue-fix-title">
-                      <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                        <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                      </svg>
-                      Suggested Fix
-                    </div>
-                    <div style="color: var(--color-text-secondary);">
-                      Install and configure <code class="code-inline">pino</code> for structured JSON logging
-                    </div>
-                  </div>
-                  <button class="btn btn-secondary btn-sm">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                      <path d="M8 2L2 8L8 14M14 2L8 8L14 14" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                    </svg>
-                    Apply Fix
-                  </button>
-                </div>
-              </div>
-            </div>
-
-          </div>
-
-          <!-- Action Bar -->
-          <div style="margin-top: var(--space-6); padding: var(--space-4); background: var(--color-bg-secondary); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: space-between;">
-            <div>
-              <div style="font-weight: 600; margin-bottom: 4px;">Ready to deploy?</div>
-              <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary);">
-                Fix critical issues before deploying to production
-              </div>
-            </div>
-            <div style="display: flex; gap: var(--space-2);">
-              <button class="btn btn-secondary">
-                Fix All Critical Issues
-              </button>
-              <button class="btn btn-primary" onclick="window.location.href='deployment.html'">
-                Continue to Deployment
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none" xmlns="http://www.w3.org/2000/svg">
-                  <path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
-                </svg>
-              </button>
-            </div>
+          <div id="issues-container">
+            <!-- Issues will be rendered here by JavaScript -->
           </div>
 
         </div>
@@ -457,24 +584,310 @@
   </div>
 
   <script>
-    // Filter functionality
-    const filterBtns = document.querySelectorAll('.filter-btn');
-    
-    filterBtns.forEach(btn => {
-      btn.addEventListener('click', function() {
-        // Remove active from same group
-        if (this.dataset.filter) {
-          document.querySelectorAll('[data-filter]').forEach(b => b.classList.remove('active'));
-        } else if (this.dataset.category) {
-          document.querySelectorAll('[data-category]').forEach(b => b.classList.remove('active'));
-        }
+    // Issues data
+    const issues = [
+      {
+        id: "1",
+        severity: "critical",
+        rule: "Hardcoded Secret Detected",
+        file: "server.ts",
+        line: 15,
+        description: "API key hardcoded in source code. This poses a critical security risk.",
+        fix: "Move API key to environment variable and use process.env.API_KEY",
+        status: "failed",
+      },
+      {
+        id: "2",
+        severity: "warning",
+        rule: "Rate Limiting",
+        file: "server.ts",
+        line: 42,
+        description: "No rate limiting detected. Server vulnerable to DoS attacks.",
+        fix: "Implement rate limiting with token bucket algorithm",
+        status: "warning",
+      },
+      {
+        id: "3",
+        severity: "info",
+        rule: "Input Validation",
+        file: "handlers/weather.ts",
+        line: 8,
+        description: "User input not sanitized before API call.",
+        fix: "Add input validation schema using Zod or Joi",
+        status: "passed",
+      },
+    ];
+
+    // State
+    let fixedIssues = {};
+    let fixingIssues = {};
+    let selectedFilter = 'all';
+    let isDeploying = false;
+
+    // Initialize
+    function init() {
+      renderIssues();
+      updateSummary();
+      setupFilters();
+    }
+
+    // Render issues
+    function renderIssues() {
+      const container = document.getElementById('issues-container');
+      const filteredIssues = selectedFilter === 'all' 
+        ? issues 
+        : issues.filter(i => i.severity === selectedFilter);
+      
+      container.innerHTML = filteredIssues.map(issue => {
+        const isFixed = fixedIssues[issue.id];
+        const fixPhase = fixingIssues[issue.id] || 'idle';
+        const isFixing = fixPhase !== 'idle';
         
-        this.classList.toggle('active');
+        return `
+          <div class="issue-card ${isFixed ? 'fixed' : issue.status === 'failed' ? 'failed' : ''}" data-issue-id="${issue.id}">
+            <div class="issue-header">
+              ${getStatusIcon(issue.status, isFixed)}
+              <div class="issue-content">
+                <div class="issue-title-row">
+                  <div class="issue-title-group">
+                    <h3 class="issue-title ${isFixed ? 'resolved' : ''}">${issue.rule}</h3>
+                    <span class="severity-badge ${issue.severity}">${issue.severity.toUpperCase()}</span>
+                    ${isFixed ? '<span class="resolved-badge">✓ Issue Resolved</span>' : ''}
+                    ${issue.status === 'failed' && !isFixed && !isFixing ? '<span class="fail-badge">FAIL</span>' : ''}
+                  </div>
+                  ${!isFixed && issue.status !== 'passed' ? `
+                    <button class="btn btn-primary" style="font-size: var(--font-size-sm); padding: 8px 16px; ${isFixing ? 'pointer-events: none; opacity: 0.7;' : ''}" onclick="handleFixIssue('${issue.id}')">
+                      ${isFixing ? `
+                        <div class="spinner"></div>
+                        ${getFixPhaseText(fixPhase)}
+                      ` : `
+                        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                          <path d="M15 3H21V9M9 21H3V15M21 3L14 10M3 21L10 14" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                        </svg>
+                        Fix Issue
+                      `}
+                    </button>
+                  ` : ''}
+                </div>
+                
+                ${isFixing ? getFixProgressHTML(fixPhase) : ''}
+                
+                <div class="issue-location">
+                  <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M14 2H6C5.46957 2 4.96086 2.21071 4.58579 2.58579C4.21071 2.96086 4 3.46957 4 4V20C4 20.5304 4.21071 21.0391 4.58579 21.4142C4.96086 21.7893 5.46957 22 6 22H18C18.5304 22 19.0391 21.7893 19.4142 21.4142C19.7893 21.0391 20 20.5304 20 20V8L14 2Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                    <path d="M14 2V8H20" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                  <span>${issue.file}${issue.line ? ':' + issue.line : ''}</span>
+                </div>
+                
+                <p class="issue-description ${isFixed ? 'resolved' : ''}">${issue.description}</p>
+                
+                ${!isFixed && !isFixing ? `
+                  <div class="suggested-fix">
+                    <div class="suggested-fix-title">Suggested Fix:</div>
+                    <div class="suggested-fix-content">${issue.fix}</div>
+                  </div>
+                ` : ''}
+                
+                ${isFixed ? `
+                  <div class="success-message">
+                    <div class="success-message-content">
+                      <svg width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                        <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                      </svg>
+                      <span>Issue resolved successfully — Code updated and validated</span>
+                    </div>
+                  </div>
+                ` : ''}
+              </div>
+            </div>
+          </div>
+        `;
+      }).join('');
+      
+      if (filteredIssues.length === 0) {
+        container.innerHTML = `
+          <div class="card" style="padding: 48px; text-align: center;">
+            <div style="width: 64px; height: 64px; background: #d1fae5; border-radius: 16px; display: flex; align-items: center; justify-content: center; margin: 0 auto 16px;">
+              <svg width="32" height="32" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <h3 style="font-size: var(--font-size-xl); font-weight: 600; margin-bottom: 8px;">No Issues Found</h3>
+            <p style="color: var(--color-text-secondary);">All compliance checks passed for this severity level</p>
+          </div>
+        `;
+      }
+    }
+
+    // Get status icon
+    function getStatusIcon(status, isFixed) {
+      if (isFixed) {
+        return `<svg class="issue-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>`;
+      }
+      
+      switch (status) {
+        case 'passed':
+          return `<svg class="issue-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>`;
+        case 'warning':
+          return `<svg class="issue-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 9V13M12 17H12.01M10.29 3.86L1.82 18C1.64537 18.3024 1.55296 18.6453 1.55199 18.9945C1.55101 19.3437 1.64151 19.6871 1.81445 19.9905C1.98738 20.2939 2.23675 20.5467 2.53773 20.7239C2.83871 20.9011 3.18082 20.9962 3.53 21H20.47C20.8192 20.9962 21.1613 20.9011 21.4623 20.7239C21.7633 20.5467 22.0126 20.2939 22.1856 19.9905C22.3585 19.6871 22.449 19.3437 22.448 18.9945C22.447 18.6453 22.3546 18.3024 22.18 18L13.71 3.86C13.5317 3.56611 13.2807 3.32312 12.9812 3.15448C12.6817 2.98585 12.3437 2.89725 12 2.89725C11.6563 2.89725 11.3183 2.98585 11.0188 3.15448C10.7193 3.32312 10.4683 3.56611 10.29 3.86Z" stroke="#f59e0b" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>`;
+        case 'failed':
+          return `<svg class="issue-icon" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+            <path d="M12 8V12M12 16H12.01M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#ef4444" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>`;
+      }
+    }
+
+    // Get fix phase text
+    function getFixPhaseText(phase) {
+      switch (phase) {
+        case 'applying': return 'Applying fix...';
+        case 'updating': return 'Updating code...';
+        case 'scanning': return 'Re-running scan...';
+        case 'complete': return 'Complete!';
+        default: return 'Fix Issue';
+      }
+    }
+
+    // Get fix progress HTML
+    function getFixProgressHTML(phase) {
+      const checkIcon = `<svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <path d="M9 12L11 14L15 10M21 12C21 16.9706 16.9706 21 12 21C7.02944 21 3 16.9706 3 12C3 7.02944 7.02944 3 12 3C16.9706 3 21 7.02944 21 12Z" stroke="#10b981" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+      </svg>`;
+      
+      const spinnerIcon = `<div class="spinner"></div>`;
+      
+      const emptyIcon = `<div style="width: 16px; height: 16px; border: 2px solid var(--color-border); border-radius: 50%;"></div>`;
+      
+      return `
+        <div class="fix-progress">
+          <div class="fix-progress-header">
+            <div class="spinner"></div>
+            <span class="fix-progress-text">${getFixPhaseText(phase)}</span>
+          </div>
+          <div class="fix-progress-steps">
+            <div class="fix-step ${phase !== 'idle' ? 'active' : 'inactive'}">
+              ${phase === 'updating' || phase === 'scanning' || phase === 'complete' ? checkIcon : phase === 'applying' ? spinnerIcon : emptyIcon}
+              <span>Applying fix</span>
+            </div>
+            <div class="fix-step ${phase === 'updating' || phase === 'scanning' || phase === 'complete' ? 'active' : 'inactive'}">
+              ${phase === 'scanning' || phase === 'complete' ? checkIcon : phase === 'updating' ? spinnerIcon : emptyIcon}
+              <span>Updating code</span>
+            </div>
+            <div class="fix-step ${phase === 'scanning' || phase === 'complete' ? 'active' : 'inactive'}">
+              ${phase === 'complete' ? checkIcon : phase === 'scanning' ? spinnerIcon : emptyIcon}
+              <span>Re-running compliance scan</span>
+            </div>
+          </div>
+        </div>
+      `;
+    }
+
+    // Handle fix issue
+    function handleFixIssue(issueId) {
+      fixingIssues[issueId] = 'applying';
+      renderIssues();
+      
+      setTimeout(() => {
+        fixingIssues[issueId] = 'updating';
+        renderIssues();
+      }, 800);
+      
+      setTimeout(() => {
+        fixingIssues[issueId] = 'scanning';
+        renderIssues();
+      }, 1600);
+      
+      setTimeout(() => {
+        fixingIssues[issueId] = 'complete';
+        renderIssues();
         
-        // In a real app, this would filter the issues list
-        console.log('Filter:', this.dataset.filter || this.dataset.category);
+        setTimeout(() => {
+          delete fixingIssues[issueId];
+          fixedIssues[issueId] = true;
+          renderIssues();
+          updateSummary();
+        }, 500);
+      }, 2400);
+    }
+
+    // Update summary
+    function updateSummary() {
+      const passedCount = issues.filter(i => i.status === 'passed' || fixedIssues[i.id]).length;
+      const warningCount = issues.filter(i => i.status === 'warning' && !fixedIssues[i.id]).length;
+      const failedCount = issues.filter(i => i.status === 'failed' && !fixedIssues[i.id]).length;
+      const totalScore = Math.round(((passedCount + warningCount * 0.5) / issues.length) * 100);
+      
+      document.getElementById('passed-count').textContent = passedCount;
+      document.getElementById('warning-count').textContent = warningCount;
+      document.getElementById('failed-count').textContent = failedCount;
+      document.getElementById('overall-score').textContent = totalScore + '/100';
+      
+      // Update deploy button
+      const deployBtn = document.getElementById('deploy-btn');
+      const deployText = document.getElementById('deploy-text');
+      const canDeploy = failedCount === 0;
+      const allResolved = passedCount === issues.length;
+      
+      if (canDeploy) {
+        deployBtn.disabled = false;
+        deployBtn.classList.remove('btn-primary');
+        deployBtn.classList.add('btn-success');
+        deployText.textContent = 'Proceed to Deploy';
+      } else {
+        deployBtn.disabled = true;
+        deployBtn.classList.add('btn-primary');
+        deployBtn.classList.remove('btn-success');
+        deployText.textContent = 'Fix Critical Issues First';
+      }
+      
+      // Show/hide ready banner
+      const readyBanner = document.getElementById('ready-banner');
+      if (allResolved) {
+        readyBanner.style.display = 'block';
+        document.getElementById('ready-score-value').textContent = totalScore;
+      } else {
+        readyBanner.style.display = 'none';
+      }
+    }
+
+    // Setup filters
+    function setupFilters() {
+      const filterBtns = document.querySelectorAll('.filter-btn');
+      filterBtns.forEach(btn => {
+        btn.addEventListener('click', function() {
+          filterBtns.forEach(b => b.classList.remove('active'));
+          this.classList.add('active');
+          selectedFilter = this.dataset.filter;
+          renderIssues();
+        });
       });
-    });
+    }
+
+    // Handle deploy
+    function handleDeploy() {
+      const deployBtn = document.getElementById('deploy-btn');
+      const deployText = document.getElementById('deploy-text');
+      const deployIcon = document.getElementById('deploy-icon');
+      
+      isDeploying = true;
+      deployBtn.classList.add('loading');
+      deployText.textContent = 'Loading...';
+      deployIcon.style.display = 'none';
+      
+      setTimeout(() => {
+        window.location.href = 'deployment.html';
+      }, 300);
+    }
+
+    // Initialize on load
+    init();
   </script>
 </body>
 </html>

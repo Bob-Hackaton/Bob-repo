@@ -10,6 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
+    /* File Tree Sidebar Styles */
     .file-tree {
       list-style: none;
       padding: 0;
@@ -17,58 +18,83 @@
     }
     
     .file-tree-item {
-      padding: var(--space-1) var(--space-2);
-      cursor: pointer;
-      border-radius: var(--radius-sm);
-      font-size: var(--font-size-sm);
+      width: 100%;
       display: flex;
       align-items: center;
-      gap: var(--space-1);
-      transition: background var(--transition-fast);
+      gap: 12px;
+      padding: 12px 16px;
+      cursor: pointer;
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      transition: all 200ms ease;
+      border: 2px solid transparent;
+      color: var(--color-text-secondary);
     }
     
-    .file-tree-item:hover {
+    .file-tree-item:hover:not(.active) {
       background: var(--color-surface-hover);
+      color: var(--color-text-primary);
     }
     
     .file-tree-item.active {
-      background: var(--color-primary-light);
-      color: var(--color-primary);
-      font-weight: 500;
+      background: #dbeafe;
+      color: #2563eb;
+      border-color: #3b82f6;
+      box-shadow: var(--shadow-md);
+    }
+    
+    .dark .file-tree-item.active {
+      background: #1e3a8a;
+      color: #60a5fa;
+      border-color: #2563eb;
     }
     
     .file-icon {
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
       flex-shrink: 0;
     }
     
+    .file-name {
+      flex: 1;
+      text-align: left;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+    }
+    
+    .chevron-icon {
+      width: 16px;
+      height: 16px;
+      margin-left: auto;
+      opacity: 0;
+      transition: opacity 200ms ease;
+    }
+    
+    .file-tree-item.active .chevron-icon {
+      opacity: 1;
+    }
+    
+    /* Code Viewer Styles */
     .code-viewer {
-      background: #1e1e1e;
+      background: #0f172a;
       color: #d4d4d4;
       font-family: var(--font-mono);
       font-size: 14px;
-      line-height: 1.6;
-      padding: var(--space-3);
-      border-radius: var(--radius-lg);
-      overflow-x: auto;
+      line-height: 1.75;
+      padding: var(--space-8);
+      overflow: auto;
       height: 100%;
     }
     
-    .code-line {
-      display: flex;
-      gap: var(--space-3);
+    .code-viewer pre {
+      margin: 0;
+      white-space: pre;
     }
     
-    .line-number {
-      color: #858585;
-      text-align: right;
-      min-width: 40px;
-      user-select: none;
-    }
-    
-    .line-content {
-      flex: 1;
+    .code-viewer code {
+      font-family: inherit;
     }
     
     /* Syntax highlighting */
@@ -78,33 +104,126 @@
     .function { color: #dcdcaa; }
     .type { color: #4ec9b0; }
     .number { color: #b5cea8; }
+    .operator { color: #d4d4d4; }
     
-    .tab-bar {
-      display: flex;
-      gap: var(--space-1);
+    /* Toolbar Styles */
+    .toolbar {
+      height: 64px;
+      background: var(--color-card);
       border-bottom: 1px solid var(--color-border);
-      margin-bottom: var(--space-3);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 24px;
+      box-shadow: var(--shadow-sm);
     }
     
-    .tab {
-      padding: var(--space-2) var(--space-3);
-      font-size: var(--font-size-sm);
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      background: transparent;
-      border: none;
-      border-bottom: 2px solid transparent;
-      cursor: pointer;
-      transition: all var(--transition-fast);
+    .toolbar-left {
+      display: flex;
+      align-items: center;
+      gap: 16px;
     }
     
-    .tab:hover {
+    .toolbar-icon {
+      width: 20px;
+      height: 20px;
+      color: #3b82f6;
+    }
+    
+    .dark .toolbar-icon {
+      color: #60a5fa;
+    }
+    
+    .toolbar-info {
+      display: flex;
+      flex-direction: column;
+      gap: 2px;
+    }
+    
+    .toolbar-filename {
+      font-weight: 600;
       color: var(--color-text-primary);
     }
     
-    .tab.active {
-      color: var(--color-primary);
-      border-bottom-color: var(--color-primary);
+    .toolbar-language {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+    
+    .toolbar-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    
+    /* Status Bar Styles */
+    .status-bar {
+      height: 40px;
+      background: var(--color-card);
+      border-top: 1px solid var(--color-border);
+      display: flex;
+      align-items: center;
+      padding: 0 24px;
+    }
+    
+    .status-items {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+    }
+    
+    .status-item {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+    
+    .status-dot {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: #10b981;
+    }
+    
+    /* Sidebar Info Card */
+    .sidebar-card {
+      margin-top: 32px;
+      padding: 16px;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+    }
+    
+    .sidebar-card h3 {
+      font-size: var(--font-size-sm);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .sidebar-card p {
+      font-size: var(--font-size-xs);
+      color: var(--color-text-secondary);
+      margin-bottom: 12px;
+      line-height: 1.5;
+    }
+    
+    /* Button Loading State */
+    .btn.loading {
+      pointer-events: none;
+      opacity: 0.7;
+    }
+    
+    /* Responsive */
+    @media (max-width: 768px) {
+      .screen-split {
+        grid-template-columns: 1fr;
+      }
+      
+      .sidebar {
+        display: none;
+      }
     }
   </style>
 </head>

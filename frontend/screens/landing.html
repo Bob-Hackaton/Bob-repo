@@ -3,328 +3,241 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Bob MCP Forge - Build MCP Servers with AI</title>
+  <title>Bob MCP Forge - Build Production-Ready MCP Servers in Seconds</title>
   <link rel="stylesheet" href="../styles/global.css">
   <link rel="stylesheet" href="../styles/design-system.css">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
   <style>
-    /* Premium Section Transitions */
-    .section {
-      opacity: 0;
-      transform: translateY(30px);
-      transition: opacity 0.6s cubic-bezier(0.4, 0, 0.2, 1), transform 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .section.visible { opacity: 1; transform: translateY(0); }
-    .section.hidden { display: none; }
-    
-    /* Example Prompt Chips - Premium Hover */
-    .example-prompt {
-      position: relative;
-      overflow: hidden;
-    }
-    .example-prompt::before {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: -100%;
-      width: 100%;
-      height: 100%;
-      background: linear-gradient(90deg, transparent, rgba(59, 130, 246, 0.1), transparent);
-      transition: left 0.5s;
-    }
-    .example-prompt:hover::before {
-      left: 100%;
-    }
-    .example-prompt:hover {
-      background: var(--color-surface) !important;
-      border-color: var(--color-primary) !important;
-      box-shadow: var(--shadow-md);
-      transform: translateY(-2px);
-    }
-    
-    /* Feature Cards - Premium Elevation */
-    .feature-card {
-      position: relative;
-      overflow: hidden;
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .feature-card::after {
-      content: '';
-      position: absolute;
-      top: 0;
-      left: 0;
-      right: 0;
-      height: 2px;
-      background: var(--gradient-primary);
-      transform: scaleX(0);
-      transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .feature-card:hover::after {
-      transform: scaleX(1);
-    }
-    .feature-card:hover {
-      box-shadow: var(--shadow-xl);
-      transform: translateY(-6px);
-    }
-    
-    /* Premium Progress Steps */
-    .progress-steps {
-      display: flex;
+    /* Hero Badge */
+    .hero-badge {
+      display: inline-flex;
       align-items: center;
-      justify-content: center;
-      gap: var(--space-2);
-      margin-bottom: var(--space-8);
-      padding: var(--space-4);
-      background: var(--color-surface);
-      border-radius: var(--radius-xl);
+      gap: 8px;
+      padding: 8px 16px;
+      background: #dbeafe;
+      border: 1px solid #bfdbfe;
+      border-radius: 9999px;
+      margin-bottom: 24px;
       box-shadow: var(--shadow-sm);
     }
-    .progress-step { display: flex; align-items: center; gap: var(--space-2); }
-    .step-circle {
-      width: 48px;
-      height: 48px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-weight: 600;
-      font-size: var(--font-size-base);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      position: relative;
-    }
-    .step-circle.pending {
-      background: var(--color-bg-secondary);
-      color: var(--color-text-tertiary);
-      border: 2px solid var(--color-border);
-    }
-    .step-circle.active {
-      background: var(--gradient-primary);
-      color: white;
-      box-shadow: 0 0 0 4px var(--color-primary-light), var(--shadow-md);
-      animation: pulse-glow 2s infinite;
-    }
-    .step-circle.complete {
-      background: var(--gradient-success);
-      color: white;
-      box-shadow: var(--shadow-sm);
-    }
-    .step-label {
+    
+    .hero-badge-text {
       font-size: var(--font-size-sm);
-      font-weight: 500;
-      color: var(--color-text-secondary);
-      transition: all 0.3s;
-    }
-    .step-label.active {
-      color: var(--color-text-primary);
       font-weight: 600;
-    }
-    .step-arrow {
-      color: var(--color-border-strong);
-      font-size: 20px;
-      transition: color 0.3s;
+      color: #2563eb;
     }
     
-    .btn.loading { position: relative; color: transparent; pointer-events: none; }
-    .btn.loading::after { content: ''; position: absolute; width: 20px; height: 20px; top: 50%; left: 50%; margin-left: -10px; margin-top: -10px; border: 2px solid transparent; border-top-color: white; border-radius: 50%; animation: spin 0.8s linear infinite; }
-    .btn.completed { background: var(--color-success); border-color: var(--color-success); }
-    @keyframes spin { to { transform: rotate(360deg); } }
-    
-    .file-tree { list-style: none; padding: 0; margin: 0; }
-    .file-tree-item { padding: var(--space-1) var(--space-2); cursor: pointer; border-radius: var(--radius-sm); font-size: var(--font-size-sm); display: flex; align-items: center; gap: var(--space-1); transition: background var(--transition-fast); }
-    .file-tree-item:hover { background: var(--color-surface-hover); }
-    .file-tree-item.active { background: var(--color-primary-light); color: var(--color-primary); font-weight: 500; }
-    .file-icon { width: 16px; height: 16px; flex-shrink: 0; }
-    
-    .code-viewer { background: #1e1e1e; color: #d4d4d4; font-family: var(--font-mono); font-size: 14px; line-height: 1.6; padding: var(--space-3); border-radius: var(--radius-lg); overflow-x: auto; max-height: 500px; overflow-y: auto; }
-    .code-line { display: flex; gap: var(--space-3); white-space: pre; }
-    .line-number { color: #858585; text-align: right; min-width: 40px; user-select: none; }
-    .line-content { flex: 1; }
-    
-    /* Simple Syntax Highlighting */
-    .keyword { color: #569cd6; }
-    .string { color: #ce9178; }
-    .comment { color: #6a9955; }
-    .function { color: #dcdcaa; }
-    
-    /* Premium Compliance Summary */
-    .compliance-summary {
-      display: grid;
-      grid-template-columns: repeat(4, 1fr);
-      gap: var(--space-4);
-      margin-bottom: var(--space-6);
-    }
-    .summary-card {
-      text-align: center;
-      padding: var(--space-4);
-      transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .summary-card:hover {
-      transform: translateY(-4px);
-      box-shadow: var(--shadow-lg);
-    }
-    .summary-value {
-      font-size: var(--font-size-4xl);
-      font-weight: 700;
-      margin-bottom: var(--space-2);
-      background: var(--gradient-primary);
+    /* Gradient Text */
+    .gradient-text {
+      background: linear-gradient(135deg, #0f172a 0%, #334155 50%, #0f172a 100%);
       -webkit-background-clip: text;
       -webkit-text-fill-color: transparent;
       background-clip: text;
     }
-    .summary-label {
-      font-size: var(--font-size-xs);
+    
+    /* Main Input Card */
+    .input-card {
+      background: var(--color-card);
+      border-radius: 16px;
+      padding: 32px;
+      border: 1px solid var(--color-border);
+      box-shadow: 0 10px 40px rgba(0, 0, 0, 0.08);
+      transition: all 300ms ease;
+      margin-bottom: 32px;
+    }
+    
+    .input-card:hover {
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.12);
+    }
+    
+    .input-label {
+      display: block;
+      font-size: var(--font-size-sm);
+      font-weight: 600;
       color: var(--color-text-secondary);
       text-transform: uppercase;
-      letter-spacing: 0.05em;
-      font-weight: 600;
-    }
-    .score-circle {
-      width: 100px;
-      height: 100px;
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: var(--font-size-3xl);
-      font-weight: 700;
-      margin: 0 auto var(--space-2);
-      background: var(--gradient-primary);
-      color: white;
-      box-shadow: var(--shadow-lg);
-      position: relative;
-    }
-    .score-circle::after {
-      content: '';
-      position: absolute;
-      inset: -4px;
-      border-radius: 50%;
-      background: var(--gradient-primary);
-      opacity: 0.2;
-      z-index: -1;
+      letter-spacing: 0.5px;
+      margin-bottom: 12px;
     }
     
-    /* Premium Issue Items with Icons */
-    .issue-item {
-      display: flex;
-      align-items: flex-start;
-      gap: var(--space-3);
-      padding: var(--space-3);
-      border-left: 4px solid;
-      background: var(--color-surface);
-      border-radius: var(--radius-lg);
-      margin-bottom: var(--space-3);
-      transition: all 0.4s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: var(--shadow-sm);
-    }
-    .issue-item:hover {
-      transform: translateX(4px);
-      box-shadow: var(--shadow-md);
-    }
-    .issue-item.critical {
-      border-left-color: var(--color-error);
-      background: linear-gradient(to right, var(--color-error-light), var(--color-surface));
-    }
-    .issue-item.warning {
-      border-left-color: var(--color-warning);
-      background: linear-gradient(to right, var(--color-warning-light), var(--color-surface));
-    }
-    .issue-item.resolved {
-      border-left-color: var(--color-success);
-      background: linear-gradient(to right, var(--color-success-light), var(--color-surface));
-      opacity: 0.8;
-    }
-    .issue-item.fixing { opacity: 0.6; }
-    .issue-title { font-weight: 600; font-size: var(--font-size-base); margin-bottom: 6px; }
-    .issue-description { font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.5; }
-    
-    .fix-progress {
-      font-size: var(--font-size-sm);
-      color: var(--color-text-secondary);
-      margin-top: var(--space-2);
-      display: flex;
-      align-items: center;
-      gap: var(--space-2);
-    }
-    .fix-progress .spinner { width: 16px; height: 16px; border-width: 2px; }
-    
-    /* Premium Success Banner */
-    .ready-banner {
-      background: var(--gradient-success);
-      border: none;
-      border-radius: var(--radius-xl);
-      padding: var(--space-4);
-      margin-bottom: var(--space-6);
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-      animation: slideDown 0.6s cubic-bezier(0.4, 0, 0.2, 1);
-      box-shadow: var(--shadow-lg);
-      color: white;
-    }
-    @keyframes slideDown {
-      from { opacity: 0; transform: translateY(-30px) scale(0.95); }
-      to { opacity: 1; transform: translateY(0) scale(1); }
-    }
-    
-    /* Premium Deployment Success */
-    .deployment-status {
-      text-align: center;
-      padding: var(--space-6);
-      animation: scale-in 0.5s cubic-bezier(0.4, 0, 0.2, 1);
-    }
-    .status-icon {
-      width: 120px;
-      height: 120px;
-      margin: 0 auto var(--space-4);
-      border-radius: 50%;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      background: var(--gradient-success);
-      color: white;
-      box-shadow: 0 0 0 12px var(--color-success-light), var(--shadow-xl);
-      animation: bounce-subtle 2s infinite;
-    }
-    .url-display {
-      display: flex;
-      align-items: center;
-      gap: var(--space-3);
-      padding: var(--space-3);
-      background: var(--color-surface);
+    .input-textarea {
+      width: 100%;
+      height: 128px;
+      background: var(--color-background);
       border: 2px solid var(--color-border);
       border-radius: var(--radius-xl);
-      font-family: var(--font-mono);
-      font-size: var(--font-size-sm);
-      box-shadow: var(--shadow-sm);
-      transition: all 0.3s;
+      padding: 16px;
+      font-family: var(--font-sans);
+      font-size: var(--font-size-base);
+      font-weight: 500;
+      color: var(--color-text-primary);
+      resize: none;
+      transition: all 200ms ease;
     }
-    .url-display:hover {
-      border-color: var(--color-primary);
+    
+    .input-textarea::placeholder {
+      color: var(--color-text-secondary);
+    }
+    
+    .input-textarea:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    .input-select {
+      width: 100%;
+      background: var(--color-background);
+      border: 2px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 12px 16px;
+      font-family: var(--font-sans);
+      font-size: var(--font-size-base);
+      font-weight: 500;
+      color: var(--color-text-primary);
+      cursor: pointer;
+      transition: all 200ms ease;
+    }
+    
+    .input-select:focus {
+      outline: none;
+      border-color: #3b82f6;
+      box-shadow: 0 0 0 4px rgba(59, 130, 246, 0.1);
+    }
+    
+    /* Generate Button */
+    .btn-generate {
+      background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%);
+      color: white;
+      box-shadow: 0 10px 25px rgba(59, 130, 246, 0.3);
+      transition: all 300ms ease;
+    }
+    
+    .btn-generate:hover:not(:disabled) {
+      box-shadow: 0 20px 40px rgba(59, 130, 246, 0.4);
+      transform: translateY(-2px);
+    }
+    
+    .btn-generate:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+    }
+    
+    .btn-generate.loading {
+      pointer-events: none;
+    }
+    
+    /* Example Prompts */
+    .example-prompt {
+      padding: 8px 16px;
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-lg);
+      font-size: var(--font-size-sm);
+      font-weight: 500;
+      color: var(--color-text-primary);
+      cursor: pointer;
+      transition: all 200ms ease;
+    }
+    
+    .example-prompt:hover {
+      background: var(--color-surface-hover);
+      border-color: #3b82f6;
       box-shadow: var(--shadow-md);
     }
-    .url-text {
-      flex: 1;
-      color: var(--color-primary);
-      word-break: break-all;
+    
+    /* Feature Cards */
+    .feature-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 24px;
+    }
+    
+    .feature-card {
+      background: var(--color-card);
+      border: 1px solid var(--color-border);
+      border-radius: var(--radius-xl);
+      padding: 24px;
+      transition: all 300ms ease;
+    }
+    
+    .feature-card:hover {
+      box-shadow: var(--shadow-lg);
+      transform: translateY(-4px);
+    }
+    
+    .feature-icon {
+      width: 48px;
+      height: 48px;
+      border-radius: var(--radius-lg);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 16px;
+    }
+    
+    .feature-icon.blue {
+      background: #dbeafe;
+      border: 1px solid #bfdbfe;
+    }
+    
+    .feature-icon.green {
+      background: #d1fae5;
+      border: 1px solid #a7f3d0;
+    }
+    
+    .feature-icon.purple {
+      background: #e9d5ff;
+      border: 1px solid #d8b4fe;
+    }
+    
+    .feature-title {
+      font-size: var(--font-size-lg);
+      font-weight: 600;
+      margin-bottom: 8px;
+    }
+    
+    .feature-description {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
+      line-height: 1.6;
+    }
+    
+    /* Trust Badge */
+    .trust-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 12px 24px;
+      background: rgba(0, 0, 0, 0.02);
+      border: 1px solid var(--color-border);
+      border-radius: 9999px;
+    }
+    
+    .trust-badge-text {
+      font-size: var(--font-size-sm);
+      color: var(--color-text-secondary);
       font-weight: 500;
     }
     
-    .split-layout { display: grid; grid-template-columns: 280px 1fr; gap: var(--space-4); min-height: 400px; }
-    .sidebar-panel { background: var(--color-bg-secondary); border-radius: var(--radius-lg); padding: var(--space-3); }
-    .content-panel { background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); padding: var(--space-3); }
-    
+    /* Responsive */
     @media (max-width: 768px) {
-      .split-layout { grid-template-columns: 1fr; }
-      .compliance-summary { grid-template-columns: repeat(2, 1fr); }
-      .progress-steps { flex-direction: column; }
-      .step-arrow { transform: rotate(90deg); }
+      .feature-grid {
+        grid-template-columns: 1fr;
+      }
+      
+      .input-card {
+        padding: 24px;
+      }
     }
   </style>
 </head>
 <body>
   <div id="app">
+    <!-- Header -->
     <header class="app-header">
       <a href="../index.html" class="app-logo">
         <div class="app-logo-icon">B</div>
@@ -333,377 +246,180 @@
       <nav class="app-nav">
         <a href="../index.html" class="nav-link">Home</a>
         <a href="../documentation.html" class="nav-link">Documentation</a>
-        <a href="#" class="nav-link">Examples</a>
-        <a href="https://github.com/bob-mcp-forge/bob-mcp-forge" class="nav-link" target="_blank">GitHub</a>
+        <a href="https://github.com/bob-mcp-forge/bob-mcp-forge" class="nav-link" target="_blank" rel="noopener noreferrer">GitHub</a>
       </nav>
     </header>
 
+    <!-- Main Content -->
     <main class="app-main">
-      <div class="screen screen-full" style="padding: var(--space-6);">
-        <div class="container" style="max-width: var(--max-width-xl);">
+      <div class="screen screen-full">
+        <div class="container" style="max-width: 1200px; padding: 80px 32px;">
           
-          <div class="progress-steps" id="progress-indicator">
-            <div class="progress-step">
-              <div class="step-circle active" id="step-generate">1</div>
-              <div class="step-label active">Generate</div>
+          <!-- Hero Section -->
+          <div style="text-align: center; margin-bottom: 64px;">
+            <div class="hero-badge">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                <path d="M12 2L15.09 8.26L22 9.27L17 14.14L18.18 21.02L12 17.77L5.82 21.02L7 14.14L2 9.27L8.91 8.26L12 2Z" fill="#2563eb" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+              <span class="hero-badge-text">AI-Powered MCP Server Generation</span>
             </div>
-            <div class="step-arrow">→</div>
-            <div class="progress-step">
-              <div class="step-circle pending" id="step-scan">2</div>
-              <div class="step-label">Scan</div>
-            </div>
-            <div class="step-arrow">→</div>
-            <div class="progress-step">
-              <div class="step-circle pending" id="step-report">3</div>
-              <div class="step-label">Report</div>
-            </div>
+            <h1 style="font-size: 56px; font-weight: 700; margin-bottom: 24px; line-height: 1.1; letter-spacing: -0.02em;" class="gradient-text">
+              Build Production-Ready<br>MCP Servers in Seconds
+            </h1>
+            <p style="font-size: var(--font-size-xl); color: var(--color-text-secondary); max-width: 700px; margin: 0 auto; line-height: 1.6;">
+              Transform plain English into secure, compliant Model Context Protocol servers. Deploy to cloud with one click.
+            </p>
           </div>
 
-          <!-- Section 1: Input -->
-          <div id="section-input" class="section visible">
-            <div style="text-align: center; margin-bottom: var(--space-6);">
-              <h1 style="font-size: var(--font-size-4xl); font-weight: 700; margin-bottom: var(--space-2); line-height: 1.2;">Build MCP Servers with AI</h1>
-              <p style="font-size: var(--font-size-xl); color: var(--color-text-secondary);">Transform plain English into secure, compliant Model Context Protocol servers. Deploy to cloud with one click.</p>
+          <!-- Main Input Card -->
+          <div style="max-width: 900px; margin: 0 auto;">
+            <div class="input-card">
+              <label class="input-label">Describe your MCP tool</label>
+              <textarea 
+                id="prompt-input" 
+                class="input-textarea" 
+                placeholder="e.g., 'Create a calendar integration that syncs with Google Calendar and sends reminders via Slack'"
+              ></textarea>
+
+              <div style="margin-top: 24px; display: flex; gap: 16px; align-items: end;">
+                <div style="flex: 1;">
+                  <label class="input-label">Compliance Profile</label>
+                  <select id="compliance-select" class="input-select">
+                    <option value="general">General</option>
+                    <option value="gdpr">GDPR</option>
+                    <option value="soc2">SOC2</option>
+                    <option value="hipaa">HIPAA</option>
+                  </select>
+                </div>
+                <button class="btn btn-generate" id="generate-btn" style="font-size: var(--font-size-lg); padding: 16px 32px;" disabled onclick="handleGenerate()">
+                  <span id="btn-text">Generate Server</span>
+                  <svg id="btn-icon" width="20" height="20" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M5 12H19M19 12L12 5M19 12L12 19" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
+                </button>
+              </div>
             </div>
 
-            <div class="card" style="padding: var(--space-4); margin-bottom: var(--space-4); max-width: 800px; margin-left: auto; margin-right: auto;">
-              <div style="margin-bottom: var(--space-3);">
-                <label for="prompt-input" style="display: block; font-weight: 500; margin-bottom: var(--space-2);">Describe your MCP tool</label>
-                <textarea id="prompt-input" class="input textarea" placeholder="Example: Create an MCP server that fetches weather data from OpenWeather API, caches results for 10 minutes, and provides tools for current weather and 5-day forecast..." style="min-height: 160px;"></textarea>
-              </div>
-
-              <div style="margin-bottom: var(--space-4);">
-                <label for="compliance-select" style="display: block; font-weight: 500; margin-bottom: var(--space-2);">Compliance Profile</label>
-                <select id="compliance-select" class="input select">
-                  <option value="general">General - Standard best practices</option>
-                  <option value="gdpr">GDPR - EU data protection compliance</option>
-                  <option value="soc2">SOC 2 - Security and availability controls</option>
-                  <option value="hipaa">HIPAA - Healthcare data protection</option>
-                </select>
-              </div>
-
-              <button class="btn btn-primary btn-lg w-full" id="generate-btn" disabled>
-                <span>Generate MCP Server</span>
-                <svg width="20" height="20" viewBox="0 0 20 20" fill="none"><path d="M4 10H16M16 10L11 5M16 10L11 15" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-            </div>
-
-            <div style="max-width: 800px; margin: 0 auto; margin-bottom: var(--space-16);">
-              <p style="font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-3); text-transform: uppercase; letter-spacing: 0.05em;">Try an example:</p>
-              <div style="display: flex; flex-wrap: wrap; gap: var(--space-3);">
-                <button class="example-prompt" style="padding: var(--space-2) var(--space-4); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); font-size: var(--font-size-sm); font-weight: 500; cursor: pointer; transition: all 0.2s ease;" data-prompt="Create an MCP server that connects to PostgreSQL, executes read-only queries, and returns results in JSON format">Database Query Tool</button>
-                <button class="example-prompt" style="padding: var(--space-2) var(--space-4); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); font-size: var(--font-size-sm); font-weight: 500; cursor: pointer; transition: all 0.2s ease;" data-prompt="Build an MCP server for safe file operations: read, write, list directories with permission checks and size limits">File System Manager</button>
-                <button class="example-prompt" style="padding: var(--space-2) var(--space-4); background: var(--color-surface); border: 1px solid var(--color-border); border-radius: var(--radius-lg); font-size: var(--font-size-sm); font-weight: 500; cursor: pointer; transition: all 0.2s ease;" data-prompt="Create an MCP server that integrates with Stripe API for payment processing, subscription management, and webhook handling">API Integration Hub</button>
+            <!-- Example Prompts -->
+            <div style="margin-bottom: 64px;">
+              <p class="input-label" style="margin-bottom: 12px;">Try an example:</p>
+              <div style="display: flex; flex-wrap: wrap; gap: 12px;">
+                <button class="example-prompt" onclick="setPrompt('Build a weather data fetcher that caches results')">
+                  Build a weather data fetcher that caches results
+                </button>
+                <button class="example-prompt" onclick="setPrompt('Create a GitHub issue tracker with webhook support')">
+                  Create a GitHub issue tracker with webhook support
+                </button>
+                <button class="example-prompt" onclick="setPrompt('Design a Slack notification bot with rate limiting')">
+                  Design a Slack notification bot with rate limiting
+                </button>
               </div>
             </div>
 
             <!-- Feature Cards -->
-            <div style="max-width: 1000px; margin: 0 auto;">
-              <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: var(--space-6);">
-                <div class="card feature-card" style="padding: var(--space-6); border-radius: var(--radius-xl); cursor: default;">
-                  <div style="width: 48px; height: 48px; background: rgba(59, 130, 246, 0.1); border: 1px solid rgba(59, 130, 246, 0.2); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-4);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgb(59, 130, 246)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <polygon points="13 2 3 14 12 14 11 22 21 10 12 10 13 2"></polygon>
-                    </svg>
-                  </div>
-                  <h3 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-2);">Instant Generation</h3>
-                  <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6;">AI-powered code generation with enterprise best practices built in</p>
+            <div class="feature-grid">
+              <div class="feature-card">
+                <div class="feature-icon blue">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M13 2L3 14H12L11 22L21 10H12L13 2Z" stroke="#2563eb" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </div>
-                <div class="card feature-card" style="padding: var(--space-6); border-radius: var(--radius-xl); cursor: default;">
-                  <div style="width: 48px; height: 48px; background: rgba(34, 197, 94, 0.1); border: 1px solid rgba(34, 197, 94, 0.2); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-4);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgb(34, 197, 94)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"></path>
-                    </svg>
-                  </div>
-                  <h3 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-2);">Compliance Ready</h3>
-                  <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6;">Automated security scanning and compliance validation</p>
+                <h3 class="feature-title">Instant Generation</h3>
+                <p class="feature-description">AI-powered code generation with enterprise best practices built in</p>
+              </div>
+
+              <div class="feature-card">
+                <div class="feature-icon green">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="#10b981" stroke-width="2"/>
+                    <path d="M12 6V12L16 14" stroke="#10b981" stroke-width="2" stroke-linecap="round"/>
+                  </svg>
                 </div>
-                <div class="card feature-card" style="padding: var(--space-6); border-radius: var(--radius-xl); cursor: default;">
-                  <div style="width: 48px; height: 48px; background: rgba(168, 85, 247, 0.1); border: 1px solid rgba(168, 85, 247, 0.2); border-radius: var(--radius-lg); display: flex; align-items: center; justify-content: center; margin-bottom: var(--space-4);">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="rgb(168, 85, 247)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
-                      <circle cx="12" cy="12" r="10"></circle>
-                      <line x1="2" y1="12" x2="22" y2="12"></line>
-                      <path d="M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"></path>
-                    </svg>
-                  </div>
-                  <h3 style="font-size: var(--font-size-lg); font-weight: 600; margin-bottom: var(--space-2);">One-Click Deploy</h3>
-                  <p style="font-size: var(--font-size-sm); color: var(--color-text-secondary); line-height: 1.6;">Deploy to IBM Cloud infrastructure in seconds</p>
+                <h3 class="feature-title">Compliance Ready</h3>
+                <p class="feature-description">Automated security scanning and compliance validation</p>
+              </div>
+
+              <div class="feature-card">
+                <div class="feature-icon purple">
+                  <svg width="24" height="24" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <circle cx="12" cy="12" r="10" stroke="#a855f7" stroke-width="2"/>
+                    <path d="M2 12H22M12 2C14.5013 4.73835 15.9228 8.29203 16 12C15.9228 15.708 14.5013 19.2616 12 22C9.49872 19.2616 8.07725 15.708 8 12C8.07725 8.29203 9.49872 4.73835 12 2Z" stroke="#a855f7" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+                  </svg>
                 </div>
+                <h3 class="feature-title">One-Click Deploy</h3>
+                <p class="feature-description">Deploy to IBM Cloud infrastructure in seconds</p>
+              </div>
+            </div>
+
+            <!-- Trust Badge -->
+            <div style="text-align: center; margin-top: 64px;">
+              <div class="trust-badge">
+                <svg width="16" height="16" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
+                  <path d="M12 22C17.5228 22 22 17.5228 22 12C22 6.47715 17.5228 2 12 2C6.47715 2 2 6.47715 2 12C2 17.5228 6.47715 22 12 22Z" stroke="currentColor" stroke-width="2"/>
+                  <path d="M12 6V12L16 14" stroke="currentColor" stroke-width="2" stroke-linecap="round"/>
+                </svg>
+                <span class="trust-badge-text">Trusted by developers • Enterprise-grade security • SOC2 compliant</span>
               </div>
             </div>
           </div>
 
-          <!-- Section 2: Progress -->
-          <div id="section-progress" class="section hidden">
-            <div style="max-width: 700px; margin: 0 auto;">
-              <div class="card" style="padding: var(--space-6);">
-                <div style="text-align: center; margin-bottom: var(--space-4);">
-                  <div style="width: 80px; height: 80px; margin: 0 auto var(--space-3); background: var(--color-primary-light); border-radius: 50%; display: flex; align-items: center; justify-content: center;">
-                    <div class="spinner" style="width: 40px; height: 40px; border-width: 3px;"></div>
-                  </div>
-                  <h2 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">Generating Your MCP Server</h2>
-                  <p style="color: var(--color-text-secondary);" id="progress-subtitle">This usually takes 15-30 seconds</p>
-                </div>
-                <div class="progress-bar" style="margin-bottom: var(--space-4);">
-                  <div class="progress-bar-fill" id="progress-fill" style="width: 0%;"></div>
-                </div>
-                <div style="font-size: var(--font-size-sm); color: var(--color-text-secondary); text-align: center;" id="progress-status">Analyzing your requirements...</div>
-              </div>
-            </div>
-          </div>
-
-          <!-- Section 3: Code Preview -->
-          <div id="section-code" class="section hidden">
-            <div style="margin-bottom: var(--space-4);">
-              <h2 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">Generated Code</h2>
-              <p style="color: var(--color-text-secondary);">Review your MCP server implementation</p>
-              <div id="gen-mode-badge" style="margin-top: 8px;"></div>
-            </div>
-
-            <div class="split-layout">
-              <div class="sidebar-panel">
-                <h3 style="font-size: var(--font-size-sm); font-weight: 600; color: var(--color-text-secondary); margin-bottom: var(--space-2); text-transform: uppercase; letter-spacing: 0.5px;">Project Files</h3>
-                <ul class="file-tree" id="file-tree">
-                  <!-- Dynamic files here -->
-                </ul>
-              </div>
-
-              <div class="content-panel">
-                <div style="display: flex; align-items: center; justify-content: space-between; margin-bottom: var(--space-3);">
-                  <h3 style="font-size: var(--font-size-lg); font-weight: 600;" id="current-file-name">Select a file</h3>
-                  <button class="btn btn-secondary" id="copy-code-btn">
-                    <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M5 5V3C5 2.44772 5.44772 2 6 2H13C13.5523 2 14 2.44772 14 3V10C14 10.5523 13.5523 11 13 11H11M3 5H10C10.5523 5 11 5.44772 11 6V13C11 13.5523 10.5523 14 10 14H3C2.44772 14 2 13.5523 2 13V6C2 5.44772 2.44772 5 3 5Z" stroke="currentColor" stroke-width="1.5"/></svg>
-                    Copy
-                  </button>
-                </div>
-                <div class="code-viewer" id="code-content">
-                  <div class="code-line">Select a file from the sidebar to view its content</div>
-                </div>
-              </div>
-            </div>
-
-            <div style="margin-top: var(--space-4); display: flex; gap: var(--space-2); justify-content: flex-end;">
-              <button class="btn btn-secondary" id="download-btn">
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M14 9V13C14 13.5523 13.5523 14 13 14H3C2.44772 14 2 13.5523 2 13V9M11 5L8 2M8 2L5 5M8 2V10" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-                Download ZIP
-              </button>
-              <button class="btn btn-primary" id="continue-to-compliance-btn">
-                Continue to Compliance
-                <svg width="16" height="16" viewBox="0 0 16 16" fill="none"><path d="M6 12L10 8L6 4" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
-              </button>
-            </div>
-          </div>
-
-          <!-- Section 4: Compliance dashboard -->
-          <div id="section-compliance" class="section hidden">
-            <div style="margin-bottom: var(--space-4);">
-              <h2 style="font-size: var(--font-size-3xl); font-weight: 700; margin-bottom: var(--space-2);">Compliance Dashboard</h2>
-              <p style="color: var(--color-text-secondary);">Security, performance, and policy compliance analysis</p>
-            </div>
-            <div class="compliance-summary">
-              <div class="card summary-card">
-                <div class="score-circle" id="compliance-score">--</div>
-                <div class="summary-label">Overall Score</div>
-              </div>
-            </div>
-            <div style="text-align: center; padding: 40px;">
-              <p>Compliance scanning module connecting to backend...</p>
-              <button class="btn btn-primary" id="back-to-code-btn">Back to Code</button>
-            </div>
-          </div>
         </div>
       </div>
     </main>
   </div>
 
   <script>
-    const API_BASE = 'http://localhost:3000/api/v1';
-    let currentJobId = null;
-    let generatedData = null;
-    let currentSection = 'input';
-    
-    function showSection(section) {
-      document.querySelectorAll('.section').forEach(s => {
-        s.classList.remove('visible');
-        s.classList.add('hidden');
-      });
-      document.getElementById(`section-${section}`).classList.remove('hidden');
-      setTimeout(() => document.getElementById(`section-${section}`).classList.add('visible'), 50);
-      currentSection = section;
-      window.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-    
-    function updateProgressIndicator(step) {
-      const steps = { generate: 1, scan: 2, report: 3 };
-      Object.keys(steps).forEach(s => {
-        const circle = document.getElementById(`step-${s}`);
-        if (!circle) return;
-        const label = circle.nextElementSibling;
-        if (steps[s] < steps[step]) {
-          circle.classList.remove('pending', 'active');
-          circle.classList.add('complete');
-          label.classList.remove('active');
-        } else if (steps[s] === steps[step]) {
-          circle.classList.remove('pending', 'complete');
-          circle.classList.add('active');
-          label.classList.add('active');
-        } else {
-          circle.classList.remove('active', 'complete');
-          circle.classList.add('pending');
-          label.classList.remove('active');
-        }
-      });
-    }
-
     const promptInput = document.getElementById('prompt-input');
     const generateBtn = document.getElementById('generate-btn');
-    
+    const complianceSelect = document.getElementById('compliance-select');
+
+    // Enable/disable generate button based on input
     promptInput.addEventListener('input', function() {
       generateBtn.disabled = !this.value.trim();
     });
-    
-    document.querySelectorAll('.example-prompt').forEach(btn => {
-      btn.addEventListener('click', function() {
-        promptInput.value = this.dataset.prompt;
-        generateBtn.disabled = false;
-        promptInput.focus();
-      });
-    });
-    
-    generateBtn.addEventListener('click', async function() {
-      const description = promptInput.value.trim();
-      const complianceProfile = document.getElementById('compliance-select').value;
-      
-      this.classList.add('loading');
-      this.disabled = true;
 
-      try {
-        const response = await fetch(`${API_BASE}/generate`, {
-          method: 'POST',
-          headers: { 'Content-Type': 'application/json' },
-          body: JSON.stringify({ description, complianceProfile })
-        });
-        
-        const data = await response.json();
-        if (!response.ok) throw new Error(data.error?.message || 'Failed to start generation');
-        
-        currentJobId = data.jobId;
-        showSection('progress');
-        updateProgressIndicator('generate');
-        startPolling(currentJobId);
-        
-      } catch (err) {
-        alert(`Error: ${err.message}`);
-        this.classList.remove('loading');
-        this.disabled = false;
-      }
-    });
+    // Set prompt from example
+    function setPrompt(text) {
+      promptInput.value = text;
+      generateBtn.disabled = false;
+      promptInput.focus();
+    }
 
-    function startPolling(jobId) {
-      const fill = document.getElementById('progress-fill');
-      const statusText = document.getElementById('progress-status');
+    // Handle generate
+    function handleGenerate() {
+      const prompt = promptInput.value.trim();
+      const profile = complianceSelect.value;
       
-      const poll = setInterval(async () => {
-        try {
-          const response = await fetch(`${API_BASE}/jobs/${jobId}`);
-          const job = await response.json();
-          
-          fill.style.width = `${job.progress || 10}%`;
-          
-          if (job.status === 'generating') {
-            statusText.textContent = 'Bob is thinking and generating code...';
-          } else if (job.status === 'generated' || job.status === 'completed') {
-            clearInterval(poll);
-            generatedData = job.data.generatedCode;
-            renderResults(generatedData);
-            setTimeout(() => {
-              showSection('code');
-              updateProgressIndicator('report');
-            }, 500);
-          } else if (job.status === 'failed') {
-            clearInterval(poll);
-            alert(`Generation failed: ${job.error?.message || 'Unknown error'}`);
-            showSection('input');
-            generateBtn.classList.remove('loading');
-            generateBtn.disabled = false;
-          }
-        } catch (err) {
-          console.error('Polling error:', err);
+      if (!prompt) return;
+
+      // Show loading state
+      const btnText = document.getElementById('btn-text');
+      const btnIcon = document.getElementById('btn-icon');
+      
+      generateBtn.classList.add('loading');
+      generateBtn.disabled = true;
+      btnText.textContent = 'Starting...';
+      btnIcon.style.display = 'none';
+
+      // Store prompt in localStorage for progress page
+      localStorage.setItem('userPrompt', prompt);
+      localStorage.setItem('complianceProfile', profile);
+
+      // Navigate to progress page after short delay
+      setTimeout(() => {
+        window.location.href = `progress.html?prompt=${encodeURIComponent(prompt)}`;
+      }, 300);
+    }
+
+    // Allow Enter key to submit (with Shift+Enter for new line)
+    promptInput.addEventListener('keydown', function(e) {
+      if (e.key === 'Enter' && !e.shiftKey) {
+        e.preventDefault();
+        if (!generateBtn.disabled) {
+          handleGenerate();
         }
-      }, 2000);
-    }
-
-    function renderResults(data) {
-      const tree = document.getElementById('file-tree');
-      const badge = document.getElementById('gen-mode-badge');
-
-      // Defensive: default missing metadata to 'unknown' so section transition is not blocked
-      const mode = (data && data.metadata && data.metadata.generationMode) || 'unknown';
-      const files = (data && data.files) || [];
-
-      tree.innerHTML = '';
-      
-      // Safely handle metadata
-      if (data.metadata && data.metadata.generationMode) {
-        badge.innerHTML = `<span class="badge badge-${data.metadata.generationMode === 'bob' ? 'success' : 'info'}">
-          Mode: ${data.metadata.generationMode.toUpperCase()}
-        </span>`;
       }
-
-      if (!data.files || data.files.length === 0) {
-        console.error('No files in generated data');
-        return;
-      }
-
-      files.forEach((file, index) => {
-        const li = document.createElement('li');
-        li.className = `file-tree-item ${index === 0 ? 'active' : ''}`;
-        li.innerHTML = `
-          <svg class="file-icon" viewBox="0 0 16 16" fill="none"><path d="M9 2H3C2.44772 2 2 2.44772 2 3V13C2 13.5523 2.44772 14 3 14H13C13.5523 14 14 13.5523 14 13V7L9 2Z" stroke="currentColor" stroke-width="1.5"/><path d="M9 2V7H14" stroke="currentColor" stroke-width="1.5"/></svg>
-          <span>${file.path}</span>
-        `;
-        li.onclick = () => {
-          document.querySelectorAll('.file-tree-item').forEach(i => i.classList.remove('active'));
-          li.classList.add('active');
-          displayFile(file);
-        };
-        tree.appendChild(li);
-      });
-
-      if (files.length > 0) displayFile(files[0]);
-    }
-
-    function displayFile(file) {
-      document.getElementById('current-file-name').textContent = file.path;
-      const viewer = document.getElementById('code-content');
-      viewer.innerHTML = '';
-      
-      const lines = file.content.split('\n');
-      lines.forEach((line, i) => {
-        const div = document.createElement('div');
-        div.className = 'code-line';
-        div.innerHTML = `<span class="line-number">${i + 1}</span><span class="line-content">${escapeHtml(line)}</span>`;
-        viewer.appendChild(div);
-      });
-    }
-
-    function escapeHtml(text) {
-      const div = document.createElement('div');
-      div.textContent = text;
-      return div.innerHTML;
-    }
-
-    document.getElementById('copy-code-btn').onclick = function() {
-      const activeFile = (generatedData?.files || []).find(f => f.path === document.getElementById('current-file-name').textContent);
-      if (activeFile) {
-        navigator.clipboard.writeText(activeFile.content);
-        this.textContent = '✓ Copied!';
-        setTimeout(() => this.textContent = 'Copy', 2000);
-      }
-    };
-
-    document.getElementById('back-to-code-btn').onclick = () => showSection('code');
-    document.getElementById('continue-to-compliance-btn').onclick = () => showSection('compliance');
+    });
   </script>
 </body>
 </html>
