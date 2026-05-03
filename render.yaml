@@ -1,0 +1,23 @@
+services:
+  # Backend API Service
+  - type: web
+    name: bob-mcp-forge-api
+    env: node
+    region: oregon
+    plan: free
+    buildCommand: cd backend/api && npm install
+    startCommand: cd backend/api && npm start
+    envVars:
+      - key: NODE_ENV
+        value: production
+      - key: PORT
+        value: 10000
+      - key: MONGODB_URI
+        sync: false
+      - key: BOB_API_KEY
+        sync: false
+      - key: IBM_CLOUD_API_KEY
+        sync: false
+    healthCheckPath: /health
+
+# Made with Bob
